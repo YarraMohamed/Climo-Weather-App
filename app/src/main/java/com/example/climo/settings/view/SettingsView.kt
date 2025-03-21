@@ -167,16 +167,20 @@ fun LocationCard(){
 //TempCard
 @Composable
 fun TempCard(){
+    val selectedTemp = remember { mutableStateOf(R.string.kelvin) }
+    //container
     Column(modifier = Modifier
         .padding(top = 25.dp)
         .fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally) {
+        //card
         Card(shape = RoundedCornerShape(16.dp),
             colors = CardDefaults.cardColors(containerColor = colorResource(R.color.dark_blue)),
             modifier = Modifier
                 .width(360.dp)
                 .height(125.dp)) {
             Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
+                //row for title
                 Row(modifier = Modifier.padding(top=14.dp)){
                     Image(
                         painter = painterResource(R.drawable.temp_icon),
@@ -189,6 +193,28 @@ fun TempCard(){
                         fontSize = 24.sp,
                         color = colorResource(R.color.white),
                         fontFamily = InterBold,
+                    )
+                }
+                //row for radio buttons
+                Row(modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 27.dp)){
+                    RadioButtonWithText(
+                        text = stringResource(R.string.kelvin),
+                        isSelected = selectedTemp.value == R.string.kelvin,
+                        onClick = { selectedTemp.value=R.string.kelvin }
+                    )
+//                    Spacer(modifier = Modifier.width(2.dp))
+                    RadioButtonWithText(
+                        text = stringResource(R.string.celsius),
+                        isSelected = selectedTemp.value == R.string.celsius,
+                        onClick = { selectedTemp.value=R.string.celsius }
+                    )
+//                    Spacer(modifier = Modifier.width(2.dp))
+                    RadioButtonWithText(
+                        text = stringResource(R.string.fahrenheit),
+                        isSelected = selectedTemp.value == R.string.fahrenheit,
+                        onClick = { selectedTemp.value=R.string.fahrenheit }
                     )
                 }
             }
@@ -258,7 +284,7 @@ fun RadioButtonWithText(text: String, isSelected: Boolean, onClick: () -> Unit) 
                 unselectedColor = Color.White
             ))
         Spacer(modifier = Modifier.width(2.dp))
-        Text(text = text, color = Color.White, fontSize = 20.sp, fontFamily = RobotoRegular)
+        Text(text = text, color = Color.White, fontSize = 18.sp, fontFamily = RobotoRegular)
     }
 }
 

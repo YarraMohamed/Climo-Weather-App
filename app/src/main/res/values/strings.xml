@@ -16,4 +16,7 @@
     <string name="map">Map</string>
     <string name="meter_second">meter/second</string>
     <string name="miles_hour">miles/hour</string>
+    <string name="kelvin">Kelvin</string>
+    <string name="celsius">Celsius</string>
+    <string name="fahrenheit">Fahrenheit</string>
 </resources>
