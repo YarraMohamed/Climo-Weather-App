@@ -19,4 +19,11 @@
     <string name="kelvin">Kelvin</string>
     <string name="celsius">Celsius</string>
     <string name="fahrenheit">Fahrenheit</string>
+    <string name="favourites">Favourites</string>
+    <string name="bin_icon">Bin_icon</string>
+    <string name="add_icon">Add_icon</string>
+    <string name="arrow_icon">arrow_icon</string>
+    <string name="alert_icon">alert_icon</string>
+    <string name="notification_icon">notification_icon</string>
+    <string name="alerts">Alerts</string>
 </resources>

@@ -62,7 +62,7 @@ fun SettingsView() {
 
 //LanguageCard
 @Composable
-fun LanguageCard(){
+private fun LanguageCard(){
     val selectedLanguage = remember { mutableStateOf(R.string.english) }
     //Container
     Column(modifier = Modifier
@@ -114,7 +114,7 @@ fun LanguageCard(){
 
 //LocationCard
 @Composable
-fun LocationCard(){
+private fun LocationCard(){
     val selectedLocation = remember { mutableStateOf(R.string.gps) }
     //Container
     Column(modifier = Modifier
@@ -166,7 +166,7 @@ fun LocationCard(){
 
 //TempCard
 @Composable
-fun TempCard(){
+private fun TempCard(){
     val selectedTemp = remember { mutableStateOf(R.string.kelvin) }
     //container
     Column(modifier = Modifier
@@ -224,7 +224,7 @@ fun TempCard(){
 
 //wind speed card
 @Composable
-fun WindSpeedCard(){
+private fun WindSpeedCard(){
     val selectedWindSpeed = remember { mutableStateOf(R.string.meter_second) }
     //container
     Column(modifier = Modifier
@@ -275,7 +275,7 @@ fun WindSpeedCard(){
 }
 
 @Composable
-fun RadioButtonWithText(text: String, isSelected: Boolean, onClick: () -> Unit) {
+private fun RadioButtonWithText(text: String, isSelected: Boolean, onClick: () -> Unit) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         RadioButton(selected = isSelected,
             onClick = onClick,
