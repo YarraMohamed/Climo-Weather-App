@@ -28,6 +28,17 @@ val RobotoMedium = FontFamily(
     Font(R.font.roboto_medium)
 )
 
+val RobotoBold = FontFamily(
+    Font(R.font.roboto_bold)
+)
+val InterMedium = FontFamily(
+    Font(R.font.inter_medium)
+)
+
+val InterSemiBold = FontFamily(
+    Font(R.font.inter_semi_bold)
+)
+
 // Set of Material typography styles to start with
 val Typography = Typography(
     bodyLarge = TextStyle(

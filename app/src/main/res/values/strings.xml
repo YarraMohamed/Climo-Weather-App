@@ -26,4 +26,18 @@
     <string name="alert_icon">alert_icon</string>
     <string name="notification_icon">notification_icon</string>
     <string name="alerts">Alerts</string>
+    <string name="date_icon">date_icon</string>
+    <string name="clock_icon">clock_icon</string>
+    <string name="condition_photo">condition_photo</string>
+    <string name="hourly_forecast">Hourly Forecast</string>
+    <string name="pm">PM</string>
+    <string name="daily_details">Daily Details</string>
+    <string name="wind_speed_photo">wind_speed_photo</string>
+    <string name="clouds_photo">clouds_photo</string>
+    <string name="clouds">Clouds</string>
+    <string name="humidity_photo">Humidity_photo</string>
+    <string name="humidity">Humidity</string>
+    <string name="pressure_photo">Pressure_photo</string>
+    <string name="pressure">Pressure</string>
+    <string name="daily_forecast">Daily Forecast</string>
 </resources>
