@@ -69,4 +69,10 @@ dependencies {
     implementation("androidx.navigation:navigation-compose:$nav_version")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0")
 
+    //location
+    implementation ("com.google.android.gms:play-services-location:21.1.0")
+
+    //view model
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.7")
+
 }
