@@ -6,6 +6,8 @@ import kotlinx.serialization.Serializable
 @Serializable
 sealed class NavigationRoutes {
     @Serializable
+    object Splash : NavigationRoutes()
+    @Serializable
     object Home : NavigationRoutes()
     @Serializable
     object Settings : NavigationRoutes()

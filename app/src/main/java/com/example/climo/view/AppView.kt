@@ -1,5 +1,6 @@
 package com.example.climo.view
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -26,6 +27,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -40,46 +42,54 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.climo.R
 import com.example.climo.alerts.view.AlertView
 import com.example.climo.favourites.view.FavouritesView
 import com.example.climo.home.view.HomeView
-import com.example.climo.model.Alerts
 import com.example.climo.settings.view.SettingsView
 import com.example.climo.view.ui.theme.GradientBackground
 import com.example.climo.view.ui.theme.RobotoRegular
 import kotlinx.coroutines.launch
 
-@Preview
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ClimoApp() {
+
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     val navController = rememberNavController()
 
-    ModalNavigationDrawer(
-        drawerContent = { DrawerContent(navController, drawerState) },
-        drawerState = drawerState
-    ) {
-        Scaffold(
-            topBar = {
+    val currentBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = currentBackStackEntry?.destination?.route
+    val isSplashScreen = currentRoute == NavigationRoutes.Splash::class.qualifiedName
+    Scaffold(
+        topBar = {
+            if (!isSplashScreen) {
                 TopAppBar(
                     title = {},
                     colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
                     navigationIcon = {
                         IconButton(onClick = { scope.launch { drawerState.open() } }) {
-                            Icon(Icons.Default.Menu,
+                            Icon(
+                                Icons.Default.Menu,
                                 contentDescription = "Menu",
                                 tint = colorResource(R.color.white),
-                                modifier = Modifier.size(30.dp))
+                                modifier = Modifier.size(30.dp)
+                            )
                         }
                     },
                     modifier = Modifier.height(60.dp),
                 )
-            },
-        ) { paddingValues ->
+            }
+        }
+    ) { paddingValues ->
+        ModalNavigationDrawer(
+            drawerContent = { if (!isSplashScreen) DrawerContent(navController, drawerState) },
+            drawerState = drawerState,
+            gesturesEnabled = !isSplashScreen
+        ) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -94,7 +104,9 @@ fun ClimoApp() {
 
 @Composable
 private fun DrawerContent(navController: NavHostController,drawerState: DrawerState){
-    ModalDrawerSheet(modifier = Modifier.padding(top = 20.dp).background(color = colorResource(R.color.white))) {
+    ModalDrawerSheet(modifier = Modifier
+        .padding(top = 20.dp)
+        .background(color = colorResource(R.color.white))) {
         val scope = rememberCoroutineScope()
         Image(
             painter = painterResource(R.drawable.nav_photo),
@@ -108,14 +120,17 @@ private fun DrawerContent(navController: NavHostController,drawerState: DrawerSt
                 Image(
                         painter = painterResource(R.drawable.home_icon),
                         contentDescription = stringResource(R.string.home),
-                        modifier = Modifier.size(50.dp).padding(10.dp)
+                        modifier = Modifier
+                            .size(50.dp)
+                            .padding(10.dp)
                 )
                 Text(
                         text = stringResource(R.string.home),
                         color = colorResource(R.color.black),
                         fontSize = 20.sp,
                         fontFamily = RobotoRegular,
-                        modifier = Modifier.align(Alignment.CenterVertically)
+                        modifier = Modifier
+                            .align(Alignment.CenterVertically)
                             .clickable {
                                 navController.navigate(NavigationRoutes.Home)
                                 scope.launch { drawerState.close() }
@@ -127,14 +142,17 @@ private fun DrawerContent(navController: NavHostController,drawerState: DrawerSt
                 Image(
                     painter = painterResource(R.drawable.fav_icon),
                     contentDescription = stringResource(R.string.favourites),
-                    modifier = Modifier.size(50.dp).padding(10.dp)
+                    modifier = Modifier
+                        .size(50.dp)
+                        .padding(10.dp)
                 )
                 Text(
                     text = stringResource(R.string.favourites),
                     color = colorResource(R.color.black),
                     fontSize = 20.sp,
                     fontFamily = RobotoRegular,
-                    modifier = Modifier.align(Alignment.CenterVertically)
+                    modifier = Modifier
+                        .align(Alignment.CenterVertically)
                         .clickable {
                             navController.navigate(NavigationRoutes.Favourites)
                             scope.launch { drawerState.close() }
@@ -146,14 +164,17 @@ private fun DrawerContent(navController: NavHostController,drawerState: DrawerSt
                 Image(
                     painter = painterResource(R.drawable.alerts_icon),
                     contentDescription = stringResource(R.string.alerts),
-                    modifier = Modifier.size(50.dp).padding(10.dp)
+                    modifier = Modifier
+                        .size(50.dp)
+                        .padding(10.dp)
                 )
                 Text(
                     text = stringResource(R.string.alerts),
                     color = colorResource(R.color.black),
                     fontSize = 20.sp,
                     fontFamily = RobotoRegular,
-                    modifier = Modifier.align(Alignment.CenterVertically)
+                    modifier = Modifier
+                        .align(Alignment.CenterVertically)
                         .clickable {
                             navController.navigate(NavigationRoutes.Alerts)
                             scope.launch { drawerState.close() }
@@ -165,14 +186,17 @@ private fun DrawerContent(navController: NavHostController,drawerState: DrawerSt
                 Image(
                     painter = painterResource(R.drawable.settings_icon),
                     contentDescription = stringResource(R.string.settings),
-                    modifier = Modifier.size(50.dp).padding(10.dp)
+                    modifier = Modifier
+                        .size(50.dp)
+                        .padding(10.dp)
                 )
                 Text(
                     text = stringResource(R.string.settings),
                     color = colorResource(R.color.black),
                     fontSize = 20.sp,
                     fontFamily = RobotoRegular,
-                    modifier = Modifier.align(Alignment.CenterVertically)
+                    modifier = Modifier
+                        .align(Alignment.CenterVertically)
                         .clickable {
                             navController.navigate(NavigationRoutes.Settings)
                             scope.launch { drawerState.close() }
@@ -184,11 +208,12 @@ private fun DrawerContent(navController: NavHostController,drawerState: DrawerSt
 }
 
 @Composable
-private fun NavigationGraph(navController: NavHostController){
-    NavHost(navController=navController, startDestination = NavigationRoutes.Home) {
+private fun NavigationGraph(navController: NavHostController) {
+    NavHost(navController = navController, startDestination = NavigationRoutes.Splash) {
+        composable<NavigationRoutes.Splash> { SplashScreenView(navController) }
         composable<NavigationRoutes.Home> { HomeView() }
-        composable<NavigationRoutes.Settings> { SettingsView()}
+        composable<NavigationRoutes.Settings> { SettingsView() }
         composable<NavigationRoutes.Alerts> { AlertView() }
-        composable<NavigationRoutes.Favourites> {FavouritesView()  }
+        composable<NavigationRoutes.Favourites> { FavouritesView() }
     }
 }
