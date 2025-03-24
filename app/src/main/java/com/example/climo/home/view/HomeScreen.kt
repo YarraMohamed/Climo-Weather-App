@@ -46,7 +46,6 @@ import com.example.climo.view.ui.theme.RobotoRegular
 fun HomeView(){
     val scrollState = rememberScrollState()
     Column(modifier = Modifier
-        .background(GradientBackground)
         .fillMaxSize()
         .verticalScroll(scrollState)) {
         WeatherDetails(WeatherStatus("13°C","Clear Sky","Cairo, Egypt"))
@@ -81,8 +80,7 @@ fun HomeView(){
 @Composable
 private fun WeatherDetails(weatherStatus: WeatherStatus) {
     Column (modifier = Modifier
-        .fillMaxWidth()
-        .padding(top = 27.dp)){
+        .fillMaxWidth()){
         Row(horizontalArrangement = Arrangement.End, modifier = Modifier
             .fillMaxWidth()
             .padding(top = 25.dp)){

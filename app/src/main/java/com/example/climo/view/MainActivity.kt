@@ -14,24 +14,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            HomeView()
+           ClimoApp()
         }
     }
 }
-
-
-//            val favourites = listOf(
-//                Favourites("Cairo, Egypt",1.0,2.0),
-//                Favourites("Paris, France",1.0,2.0),
-//                Favourites("London, England",1.0,2.0),
-//            )
-//            FavouritesView(favourites)
-
-//            val alerts = listOf(
-//                Alerts("Cairo","1:00 PM","2:00 PM"),
-//                Alerts("Cairo","1:00 PM","2:00 PM"),
-//                Alerts("Cairo","1:00 PM","2:00 PM"),
-//                Alerts("Cairo","1:00 PM","2:00 PM"),
-//                Alerts("Cairo","1:00 PM","2:00 PM"),
-//            )
-//            AlertView(alerts)

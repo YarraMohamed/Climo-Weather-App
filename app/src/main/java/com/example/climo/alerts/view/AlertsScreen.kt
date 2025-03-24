@@ -25,6 +25,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -39,8 +40,7 @@ import com.example.climo.view.ui.theme.InterExtraBold
 import com.example.climo.view.ui.theme.RobotoMedium
 
 @Composable
-fun AlertView(alerts: List<Alerts>) {
-
+fun AlertView() {
     Scaffold (
         floatingActionButton = {
             FloatingActionButton(onClick = {},
@@ -52,10 +52,10 @@ fun AlertView(alerts: List<Alerts>) {
                     modifier = Modifier.size(24.dp)
                 )
             }
-        }
+        },
+        containerColor = Color.Transparent
     ){ paddingValues ->
         Column(modifier = Modifier
-            .background(GradientBackground)
             .fillMaxSize()
             .padding(paddingValues)
         ) {
@@ -64,17 +64,23 @@ fun AlertView(alerts: List<Alerts>) {
                 color = colorResource(R.color.white),
                 fontSize = 32.sp,
                 fontFamily = InterExtraBold,
-                modifier = Modifier.padding(top=70.dp, start = 20.dp))
+                modifier = Modifier.padding(start = 20.dp))
 
-            FavouritesList(alerts)
+            AlertsList()
         }
-
     }
 
 }
 
 @Composable
-private fun FavouritesList(alerts: List<Alerts>){
+private fun AlertsList(){
+    val alerts = listOf(
+        Alerts("Cairo","1:00 PM","2:00 PM"),
+        Alerts("Cairo","1:00 PM","2:00 PM"),
+        Alerts("Cairo","1:00 PM","2:00 PM"),
+        Alerts("Cairo","1:00 PM","2:00 PM"),
+        Alerts("Cairo","1:00 PM","2:00 PM"),
+    )
     Box(modifier = Modifier
         .fillMaxWidth()
         .padding(top = 20.dp), contentAlignment = Alignment.Center) {

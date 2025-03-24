@@ -39,7 +39,6 @@ import com.example.climo.view.ui.theme.RobotoRegular
 @Composable
 fun SettingsView() {
     Column(modifier = Modifier
-        .background(GradientBackground)
         .fillMaxSize()) {
 
         //Settings title
@@ -47,7 +46,7 @@ fun SettingsView() {
             color = colorResource(R.color.white),
             fontSize = 32.sp,
             fontFamily = InterExtraBold,
-            modifier = Modifier.padding(top=70.dp, start = 20.dp))
+            modifier = Modifier.padding(start = 20.dp))
 
         //Cards
         LanguageCard()

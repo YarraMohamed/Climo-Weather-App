@@ -24,20 +24,21 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.climo.R
+import com.example.climo.model.Alerts
 import com.example.climo.model.Favourites
 import com.example.climo.view.ui.theme.GradientBackground
 import com.example.climo.view.ui.theme.InterExtraBold
 import com.example.climo.view.ui.theme.RobotoMedium
 
 @Composable
-fun FavouritesView(favourites: List<Favourites>) {
-
+fun FavouritesView() {
     Scaffold (
         floatingActionButton = {
             FloatingActionButton(onClick = {},
@@ -49,10 +50,10 @@ fun FavouritesView(favourites: List<Favourites>) {
                     modifier = Modifier.size(24.dp)
                 )
             }
-        }
+        },
+        containerColor = Color.Transparent
     ){ paddingValues ->
         Column(modifier = Modifier
-            .background(GradientBackground)
             .fillMaxSize()
             .padding(paddingValues)
         ) {
@@ -61,9 +62,9 @@ fun FavouritesView(favourites: List<Favourites>) {
                 color = colorResource(R.color.white),
                 fontSize = 32.sp,
                 fontFamily = InterExtraBold,
-                modifier = Modifier.padding(top=70.dp, start = 20.dp))
+                modifier = Modifier.padding(start = 20.dp))
 
-            FavouritesList(favourites)
+            FavouritesList()
         }
 
     }
@@ -71,7 +72,9 @@ fun FavouritesView(favourites: List<Favourites>) {
 }
 
 @Composable
-private fun FavouritesList(favourites: List<Favourites>){
+private fun FavouritesList(){
+    val favourites = listOf(
+        Favourites("Cairo, Egypt",1.0,2.0),)
     Box(modifier = Modifier
         .fillMaxWidth()
         .padding(top = 20.dp), contentAlignment = Alignment.Center) {
