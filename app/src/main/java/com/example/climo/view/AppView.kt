@@ -1,6 +1,9 @@
 package com.example.climo.view
 
+import android.location.Location
 import android.util.Log
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -32,6 +35,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -39,6 +43,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -46,8 +52,12 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.climo.R
 import com.example.climo.alerts.view.AlertView
+import com.example.climo.data.RepositoryImp
+import com.example.climo.data.remote.RetrofitHelper
+import com.example.climo.data.remote.WeatherRemoteDataSourceImp
 import com.example.climo.favourites.view.FavouritesView
 import com.example.climo.home.view.HomeView
+import com.example.climo.home.viewmodel.HomeViewModel
 import com.example.climo.settings.view.SettingsView
 import com.example.climo.view.ui.theme.GradientBackground
 import com.example.climo.view.ui.theme.RobotoRegular
@@ -55,7 +65,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ClimoApp() {
+fun ClimoApp(location: Location) {
 
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
@@ -96,7 +106,7 @@ fun ClimoApp() {
                     .background(GradientBackground)
                     .padding(paddingValues)
             ) {
-                NavigationGraph(navController)
+                NavigationGraph(navController,location)
             }
         }
     }
@@ -208,10 +218,19 @@ private fun DrawerContent(navController: NavHostController,drawerState: DrawerSt
 }
 
 @Composable
-private fun NavigationGraph(navController: NavHostController) {
+private fun NavigationGraph(navController: NavHostController,location: Location) {
+
     NavHost(navController = navController, startDestination = NavigationRoutes.Splash) {
         composable<NavigationRoutes.Splash> { SplashScreenView(navController) }
-        composable<NavigationRoutes.Home> { HomeView() }
+
+        composable<NavigationRoutes.Home> {
+            val factory = HomeViewModel.HomeFactory(
+                RepositoryImp.getInstance(
+                    WeatherRemoteDataSourceImp(RetrofitHelper.weatherService)
+                ),location)
+            val homeViewModel: HomeViewModel = viewModel(factory = factory)
+            HomeView(homeViewModel)
+        }
         composable<NavigationRoutes.Settings> { SettingsView() }
         composable<NavigationRoutes.Alerts> { AlertView() }
         composable<NavigationRoutes.Favourites> { FavouritesView() }

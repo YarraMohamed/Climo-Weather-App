@@ -71,8 +71,7 @@ class ApplicationUtils(private val context: Context){
         context.startActivity(intent)
     }
 
-    fun getAddressFromLocation(location: Location, context: Context): String {
-        val geocoder = Geocoder(context)
+    fun getAddressFromLocation(location: Location, geocoder: Geocoder): String {
         return try {
             val addresses = geocoder.getFromLocation(location.latitude, location.longitude, 1)
             if (addresses!!.isNotEmpty()) {

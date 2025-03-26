@@ -75,4 +75,12 @@ dependencies {
     //view model
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.7")
 
+    //retrofit
+    implementation("com.squareup.retrofit2:retrofit:2.11.0")
+    implementation ("com.squareup.retrofit2:converter-gson:2.11.0")
+    implementation ("com.google.code.gson:gson:2.12.1")
+
+    //glide
+    implementation ("com.github.bumptech.glide:compose:1.0.0-beta01")
+
 }

@@ -1,14 +1,15 @@
 package com.example.climo.view
 
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
+import android.location.LocationManager
 import android.os.Bundle
-import android.provider.Settings
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.core.app.ActivityCompat
@@ -19,18 +20,21 @@ import kotlinx.coroutines.launch
 const val REQUEST_LOCATION_CODE = 2005
 class MainActivity : ComponentActivity() {
 
-    val applicationUtils = ApplicationUtils(this@MainActivity)
-    lateinit var location: Location
-    var address : MutableState<String>  = mutableStateOf("")
-
+    private val applicationUtils = ApplicationUtils(this@MainActivity)
+    private var locationState: MutableState<Location?> = mutableStateOf(null)
+    private var location : Location? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if(!applicationUtils.isLocationEnabled()) applicationUtils.enableLocationService(this)
         setContent {
-           ClimoApp()
+            location = locationState.value
+            if (location != null) {
+                ClimoApp(location!!)
+            } else {
+                ClimoApp(Location(LocationManager.GPS_PROVIDER))
+            }
         }
     }
-
     override fun onStart() {
         super.onStart()
         if(applicationUtils.checkPermissions()){
@@ -38,8 +42,7 @@ class MainActivity : ComponentActivity() {
                 applicationUtils.getLocation()
                 lifecycleScope.launch {
                     applicationUtils.locationFlow.collect { updatedLocation ->
-                        location = updatedLocation
-                        address.value = applicationUtils.getAddressFromLocation(location,this@MainActivity)
+                        locationState.value = updatedLocation
                     }
                 }
             }else{
@@ -71,7 +74,11 @@ class MainActivity : ComponentActivity() {
             if(grantResults[0]==PackageManager.PERMISSION_GRANTED||grantResults[1]==PackageManager.PERMISSION_GRANTED){
                 if(applicationUtils.isLocationEnabled()){
                     applicationUtils.getLocation()
-                    location = applicationUtils.locationFlow.value
+                    lifecycleScope.launch {
+                        applicationUtils.locationFlow.collect { updatedLocation ->
+                            locationState.value = updatedLocation
+                        }
+                    }
                 }else{
                     applicationUtils.enableLocationService(this)
                 }
