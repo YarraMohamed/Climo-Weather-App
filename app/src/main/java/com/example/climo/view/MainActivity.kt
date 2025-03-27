@@ -14,6 +14,8 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.lifecycleScope
+import com.example.climo.data.remote.RetrofitHelper
+import com.example.climo.data.remote.WeatherRemoteDataSourceImp
 import com.example.climo.utilities.ApplicationUtils
 import kotlinx.coroutines.launch
 
@@ -21,18 +23,15 @@ const val REQUEST_LOCATION_CODE = 2005
 class MainActivity : ComponentActivity() {
 
     private val applicationUtils = ApplicationUtils(this@MainActivity)
-    private var locationState: MutableState<Location?> = mutableStateOf(null)
-    private var location : Location? = null
+    private var locationState: MutableState<Location> = mutableStateOf(Location(LocationManager.GPS_PROVIDER))
+    private var location : Location = Location(LocationManager.GPS_PROVIDER)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if(!applicationUtils.isLocationEnabled()) applicationUtils.enableLocationService(this)
         setContent {
             location = locationState.value
-            if (location != null) {
-                ClimoApp(location!!)
-            } else {
-                ClimoApp(Location(LocationManager.GPS_PROVIDER))
-            }
+            Log.i("TAG", "location $location ")
+            ClimoApp(location)
         }
     }
     override fun onStart() {

@@ -1,10 +1,7 @@
 package com.example.climo.home.view
 
 import android.location.Geocoder
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,7 +15,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -27,7 +23,6 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -35,7 +30,6 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -44,9 +38,10 @@ import com.bumptech.glide.integration.compose.GlideImage
 import com.example.climo.R
 import com.example.climo.home.viewmodel.HomeViewModel
 import com.example.climo.model.CurrentWeather
+import com.example.climo.model.Deatils
 import com.example.climo.model.Response
-import com.example.climo.model.WeatherStatus
-import com.example.climo.view.ui.theme.GradientBackground
+import com.example.climo.utilities.formatDate
+import com.example.climo.utilities.formatTime
 import com.example.climo.view.ui.theme.InterBold
 import com.example.climo.view.ui.theme.InterExtraBold
 import com.example.climo.view.ui.theme.InterMedium
@@ -54,34 +49,49 @@ import com.example.climo.view.ui.theme.InterSemiBold
 import com.example.climo.view.ui.theme.RobotoBold
 import com.example.climo.view.ui.theme.RobotoRegular
 
-
 @Composable
 fun HomeView(viewModel: HomeViewModel){
     val context = LocalContext.current
     val weatherStatus = viewModel.currentWeather.collectAsStateWithLifecycle()
+    val weatherHourlyForecastStatus = viewModel.currentWeatherForecast.collectAsStateWithLifecycle()
+    val weatherDailyForecastStatus = viewModel.currentDailyForecast.collectAsStateWithLifecycle()
+    val timeStatus = viewModel.time.collectAsStateWithLifecycle()
+    val dateStatus = viewModel.date.collectAsStateWithLifecycle()
     val scrollState = rememberScrollState()
+    viewModel.getCurrentTime()
+    viewModel.getCurrentDate()
 
     Column(modifier = Modifier
         .fillMaxSize()
         .verticalScroll(scrollState)) {
-
         when(weatherStatus.value){
             is Response.Loading -> {
-                CircularProgressIndicator(color = colorResource(R.color.white))
+                CircularProgressIndicator(color = colorResource(R.color.white), modifier = Modifier
+                    .align(Alignment.CenterHorizontally))
             }
             is Response.Success -> {
                 val address = viewModel.getAddressFromLocation(
                     (weatherStatus.value as Response.Success).data.coord.lat
                     ,(weatherStatus.value as Response.Success).data.coord.lon
                     ,Geocoder(context))
-                WeatherDetails((weatherStatus.value  as Response.Success).data,address)
+                WeatherDetails((weatherStatus.value  as Response.Success).data,address,timeStatus.value,dateStatus.value)
                 //Hourly Details
                 Text(text= stringResource(R.string.hourly_forecast),
                     color = colorResource(R.color.white),
                     fontSize = 32.sp,
                     fontFamily = InterExtraBold,
                     modifier = Modifier.padding(top=25.dp, start = 20.dp))
-                HourlyDetails()
+                when(weatherHourlyForecastStatus.value){
+                    is Response.Failure -> {
+                    }
+                    Response.Loading -> {
+                        CircularProgressIndicator(color = colorResource(R.color.white), modifier = Modifier
+                            .align(Alignment.CenterHorizontally))
+                    }
+                    is Response.Success -> {
+                        HourlyDetails((weatherHourlyForecastStatus.value as Response.Success).data)
+                    }
+                }
 
                 //Weather Details
                 Text(text= stringResource(R.string.daily_details),
@@ -90,29 +100,35 @@ fun HomeView(viewModel: HomeViewModel){
                     fontFamily = InterExtraBold,
                     modifier = Modifier.padding(top=20.dp, start = 20.dp))
                 WeatherConditions((weatherStatus.value  as Response.Success).data)
+
+                when(weatherDailyForecastStatus.value){
+                    is Response.Failure -> {}
+                    Response.Loading -> {
+                        CircularProgressIndicator(color = colorResource(R.color.white), modifier = Modifier
+                            .align(Alignment.CenterHorizontally))
+                    }
+                    is Response.Success -> {
+                        //Daily Forecast
+                        Text(text= stringResource(R.string.daily_forecast),
+                            color = colorResource(R.color.white),
+                            fontSize = 32.sp,
+                            fontFamily = InterExtraBold,
+                            modifier = Modifier.padding(top=20.dp, start = 20.dp))
+                        DailyForecast((weatherDailyForecastStatus.value as Response.Success).data)
+                    }
+                }
             }
             is Response.Failure -> {
 
             }
         }
-
-
-
-
-        //Daily Forecast
-        Text(text= stringResource(R.string.daily_forecast),
-            color = colorResource(R.color.white),
-            fontSize = 32.sp,
-            fontFamily = InterExtraBold,
-            modifier = Modifier.padding(top=20.dp, start = 20.dp))
-        DailyForecast()
     }
 }
 
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-private fun WeatherDetails(currentWeather: CurrentWeather,address:String) {
+private fun WeatherDetails(currentWeather: CurrentWeather,address:String,time:String,date:String) {
     Column (modifier = Modifier
         .fillMaxWidth()){
         Row(horizontalArrangement = Arrangement.End, modifier = Modifier
@@ -124,7 +140,7 @@ private fun WeatherDetails(currentWeather: CurrentWeather,address:String) {
                 modifier = Modifier
                     .size(25.dp)
                     .padding(end = 2.dp))
-            Text(text="date",
+            Text(text=date,
                 color = colorResource(R.color.white),
                 fontSize = 20.sp,
                 fontFamily = RobotoBold,
@@ -137,7 +153,7 @@ private fun WeatherDetails(currentWeather: CurrentWeather,address:String) {
                 modifier = Modifier
                     .size(30.dp)
                     .padding(start = 5.dp, end = 2.dp))
-            Text(text="time",
+            Text(text=time,
                 color = colorResource(R.color.white),
                 fontSize = 20.sp,
                 fontFamily = RobotoBold,
@@ -149,13 +165,22 @@ private fun WeatherDetails(currentWeather: CurrentWeather,address:String) {
             .fillMaxWidth()
             .padding(start = 15.dp)) {
             Column(modifier = Modifier
-                .weight(2f)
+                .weight(1.5f)
                 .padding(top = 30.dp)) {
-                Text(text = "${currentWeather.main.temp} °C",
-                    fontSize = 58.sp,
-                    color = colorResource(R.color.white),
-                    fontFamily = InterBold
+                Row(modifier = Modifier.padding(top=20.dp)){
+                    Text(
+                        text = "${currentWeather.main.temp}",
+                        color = colorResource(R.color.white),
+                        fontSize = 58.sp,
+                        fontFamily = InterBold,
                     )
+                    Text(
+                        text = stringResource(R.string.c),
+                        color = colorResource(R.color.white),
+                        fontSize = 20.sp,
+                        fontFamily = InterMedium,
+                    )
+                }
                 Row(modifier = Modifier.padding(top=10.dp)){
                     Image(
                         painter = painterResource(R.drawable.location_icon2),
@@ -178,14 +203,14 @@ private fun WeatherDetails(currentWeather: CurrentWeather,address:String) {
                 GlideImage(
                     model = "https://openweathermap.org/img/wn/${currentWeather.weather.get(0).icon}@2x.png",
                     contentDescription = "Icon",
-                    modifier = Modifier.size(100.dp)
+                    modifier = Modifier.size(120.dp)
                 )
                 Text(text = currentWeather.weather.get(0).description,
                     fontSize = 20.sp,
                     color = colorResource(R.color.white),
                     fontFamily = RobotoRegular,
                     textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(start=15.dp)
+                    modifier = Modifier.padding(top=5.dp)
                 )
             }
         }
@@ -194,60 +219,66 @@ private fun WeatherDetails(currentWeather: CurrentWeather,address:String) {
 }
 
 @Composable
-private fun HourlyDetails() {
-    val list = listOf("day1","day2","day3","day4")
+private fun HourlyDetails(hourlyDetails:List<Deatils>) {
     Box(modifier = Modifier.padding(top=18.dp,start=10.dp)) {
         LazyRow(horizontalArrangement = Arrangement.spacedBy(15.dp)) {
-            items(list.size){
-                HourlyDetailsItem()
+            items(hourlyDetails.size){
+                HourlyDetailsItem(hourlyDetails[it])
             }
         }
     }
 }
 
+@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-private fun HourlyDetailsItem() {
+private fun HourlyDetailsItem(details:Deatils) {
+    val splittedDate = details.dt_txt.split(" ")
+    val time = splittedDate[1]
+    val itemTime = formatTime(time)
+
     Card (shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.elevatedCardColors(
             containerColor = colorResource(R.color.dark_blue)),
         modifier = Modifier
             .width(180.dp)
-            .height(130.dp)) {
+            .height(150.dp)) {
         Row{
             Column(modifier = Modifier
                 .fillMaxSize()
                 .padding(start = 10.dp)
-                .weight(1f)
+                .weight(1.2f)
                 .align(Alignment.CenterVertically), verticalArrangement = Arrangement.Center) {
-                Text(text="2:00",
+                Text(text=itemTime,
                     color = colorResource(R.color.white),
-                    fontSize = 22.sp,
+                    fontSize = 20.sp,
                     fontFamily = RobotoRegular
                 )
-                Text(
-                    text = stringResource(R.string.pm),
-                    color = colorResource(R.color.white),
-                    fontSize = 22.sp,
-                    fontFamily = RobotoRegular
-                )
+                Row(modifier = Modifier.padding(top=20.dp)){
+                    Text(
+                        text = "${details.main.temp}",
+                        color = colorResource(R.color.white),
+                        fontSize = 24.sp,
+                        fontFamily = InterBold,
+                    )
+                    Text(
+                        text = stringResource(R.string.c),
+                        color = colorResource(R.color.white),
+                        fontSize = 12.sp,
+                        fontFamily = InterMedium,
+                    )
+                }
             }
             Column(modifier = Modifier
                 .weight(1f)
                 .fillMaxSize()
                 .padding(start = 10.dp)
-                .align(Alignment.CenterVertically), verticalArrangement = Arrangement.Center) {
-                Image(
-                    painter = painterResource(R.drawable.condition_photo),
-                    contentDescription = stringResource(R.string.condition_photo),
-                    modifier = Modifier.size(50.dp)
+                ) {
+                GlideImage(
+                    model = "https://openweathermap.org/img/wn/${details.weather.get(0).icon}@2x.png",
+                    contentDescription = "Icon",
+                    modifier = Modifier.size(200.dp)
                 )
-                Text(
-                    text = "17°C",
-                    color = colorResource(R.color.white),
-                    fontSize = 32.sp,
-                    modifier = Modifier.padding(top=5.dp),
-                    fontFamily = InterBold
-                )
+
             }
         }
 
@@ -359,19 +390,19 @@ private fun WeatherConditions(currentWeather: CurrentWeather) {
 }
 
 @Composable
-private fun DailyForecast(){
-    val list = listOf("day1","day2","day3","day4","day5","day6","day7")
+private fun DailyForecast(dailyDetails:List<Deatils>){
         Card (shape = RoundedCornerShape(16.dp),
             colors = CardDefaults.elevatedCardColors(
                 containerColor = colorResource(R.color.dark_blue)),
             modifier = Modifier
-                .padding(top=20.dp,start=20.dp, bottom = 20.dp)
-                .width(370.dp).height(500.dp)){
-            LazyColumn(verticalArrangement = Arrangement.spacedBy(15.dp),
+                .padding(top = 20.dp, start = 20.dp, bottom = 15.dp)
+                .width(370.dp)
+                .height(500.dp)){
+            LazyColumn(verticalArrangement = Arrangement.spacedBy(20.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.wrapContentSize(unbounded = false)) {
-                items(list.size){
-                    DailyForecastDetails()
+                items(dailyDetails.size){
+                    DailyForecastDetails(dailyDetails[it])
                 }
 
             }
@@ -380,34 +411,44 @@ private fun DailyForecast(){
 
 }
 
+@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-private fun DailyForecastDetails(){
-    Row(modifier = Modifier.padding(start=30.dp,top=15.dp, bottom = 15.dp).fillMaxSize(),
-        horizontalArrangement = Arrangement.Center,
+private fun DailyForecastDetails(details: Deatils){
+    val splittedDate = details.dt_txt.split(" ")
+    val date = splittedDate[0]
+    val itemDate = formatDate(date)
+
+    Row(modifier = Modifier
+        .padding(start = 20.dp)
+        .fillMaxSize(),
         verticalAlignment = Alignment.CenterVertically) {
-        Column(modifier = Modifier.weight(1f)) {
-            Text(text = "Sun",
+        Text(text = itemDate,
+            color = colorResource(R.color.white),
+            fontSize = 18.sp,
+            fontFamily = InterSemiBold,
+            modifier = Modifier.weight(1f)
+        )
+        GlideImage(
+            model = "https://openweathermap.org/img/wn/${details.weather.get(0).icon}@2x.png",
+            contentDescription = "Icon",
+            modifier = Modifier
+                .size(100.dp)
+                .weight(1f)
+                .padding(end = 15.dp)
+        )
+        Row(modifier = Modifier.weight(1f)){
+            Text(
+                text = "${details.main.temp}",
                 color = colorResource(R.color.white),
                 fontSize = 24.sp,
-               fontFamily = InterSemiBold
+                fontFamily = InterBold,
             )
-            Text(text = "April, 14",
+            Text(
+                text = stringResource(R.string.c),
                 color = colorResource(R.color.white),
-                fontSize = 24.sp,
-                fontFamily = InterSemiBold
+                fontSize = 12.sp,
+                fontFamily = InterMedium,
             )
         }
-        Image(
-            painter = painterResource(R.drawable.condition_photo),
-            contentDescription = stringResource(R.string.condition_photo),
-            modifier = Modifier.size(50.dp).weight(1f)
-        )
-        Text(text = "15°C",
-            color = colorResource(R.color.white),
-            fontSize = 28.sp,
-            modifier = Modifier.weight(1f),
-            fontFamily = InterSemiBold
-        )
-
     }
 }

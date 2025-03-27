@@ -2,6 +2,7 @@ package com.example.climo.data
 
 import com.example.climo.data.remote.WeatherRemoteDataSourceImp
 import com.example.climo.model.CurrentWeather
+import com.example.climo.model.WeatherList
 import kotlinx.coroutines.flow.Flow
 
 class RepositoryImp private constructor (private val weatherRemoteDataSourceImp: WeatherRemoteDataSourceImp) :Repository {
@@ -10,6 +11,9 @@ class RepositoryImp private constructor (private val weatherRemoteDataSourceImp:
         return weatherRemoteDataSourceImp.getCurrentWeather(lat,lon)
     }
 
+    override suspend fun getCurrentForecast(lat: Double, lon: Double): Flow<WeatherList> {
+        return weatherRemoteDataSourceImp.getCurrentWeatherForecast(lat,lon)
+    }
 
     companion object {
         private val repository: Repository? = null
