@@ -1,10 +1,14 @@
 package com.example.climo.view
 
 import FavMapScreen
+import android.app.AlertDialog
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationManager
+import android.net.Uri
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -63,33 +67,45 @@ class MainActivity : ComponentActivity() {
 
     override fun onRequestPermissionsResult(
         requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray,
-        deviceId: Int
+        permissions: Array<String>,
+        grantResults: IntArray
     ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults, deviceId)
-        if(requestCode == REQUEST_LOCATION_CODE){
-            if(grantResults[0]==PackageManager.PERMISSION_GRANTED||grantResults[1]==PackageManager.PERMISSION_GRANTED){
-                if(applicationUtils.isLocationEnabled()){
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == REQUEST_LOCATION_CODE) {
+            if (grantResults.isNotEmpty() &&
+                (grantResults.getOrNull(0) == PackageManager.PERMISSION_GRANTED ||
+                        grantResults.getOrNull(1) == PackageManager.PERMISSION_GRANTED)
+            ) {
+                if (applicationUtils.isLocationEnabled()) {
                     applicationUtils.getLocation()
                     lifecycleScope.launch {
                         applicationUtils.locationFlow.collect { updatedLocation ->
                             locationState.value = updatedLocation
                         }
                     }
-                }else{
+                } else {
                     applicationUtils.enableLocationService(this)
                 }
-            }else{
-                val shouldShowRationale = shouldShowRequestPermissionRationale(permissions[0]) ||
-                        shouldShowRequestPermissionRationale(permissions[1])
-                Log.i("TAG", "$shouldShowRationale")
+            } else {
+                val shouldShowRationale = permissions.any { shouldShowRequestPermissionRationale(it) }
+
                 if (shouldShowRationale) {
                     requestLocationPermissions()
                 } else {
-                    Toast.makeText(this,"You should allow loaction permission from the settings",Toast.LENGTH_LONG).show()
+                    AlertDialog.Builder(this)
+                        .setTitle("Permission Required")
+                        .setMessage("Location permission is necessary. Please enable it in settings.")
+                        .setPositiveButton("Go to Settings") { _, _ ->
+                            val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                                data = Uri.fromParts("package", packageName, null)
+                            }
+                            startActivity(intent)
+                        }
+                        .setNegativeButton("Cancel", null)
+                        .show()
                 }
             }
         }
+
     }
 }

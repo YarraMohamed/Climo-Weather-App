@@ -1,6 +1,7 @@
 package com.example.climo.home.view
 
 import android.location.Geocoder
+import android.location.Location
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -24,6 +25,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -52,7 +54,13 @@ import com.example.climo.view.ui.theme.RobotoBold
 import com.example.climo.view.ui.theme.RobotoRegular
 
 @Composable
-fun HomeView(viewModel: HomeViewModel){
+fun HomeView(viewModel: HomeViewModel,location: Location){
+
+    LaunchedEffect(location) {
+        viewModel.getCurrentWeather(location.latitude,location.longitude)
+        viewModel.getDailyWeatherForecast(location.latitude,location.longitude)
+        viewModel.getHourlyWeatherForecast(location.latitude,location.longitude)
+    }
     val context = LocalContext.current
     val weatherStatus = viewModel.currentWeather.collectAsStateWithLifecycle()
     val weatherHourlyForecastStatus = viewModel.currentWeatherForecast.collectAsStateWithLifecycle()

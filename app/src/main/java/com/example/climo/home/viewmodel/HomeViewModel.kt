@@ -23,13 +23,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 
-class HomeViewModel(private val repo:Repository, private val location: Location) : ViewModel(){
-
-    init {
-        getCurrentWeather(location.latitude,location.longitude)
-        getHourlyWeatherForecast(location.latitude,location.longitude)
-        getDailyWeatherForecast(location.latitude,location.longitude)
-    }
+class HomeViewModel(private val repo:Repository) : ViewModel(){
 
     private var weatherDetails : MutableStateFlow<Response<CurrentWeather>> = MutableStateFlow(Response.Loading)
     var currentWeather = weatherDetails.asStateFlow()
@@ -125,9 +119,9 @@ class HomeViewModel(private val repo:Repository, private val location: Location)
         }
     }
 
-    class HomeFactory(private val repo: Repository, private val location: Location) : ViewModelProvider.Factory{
+    class HomeFactory(private val repo: Repository ): ViewModelProvider.Factory{
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            return HomeViewModel(repo,location) as T
+            return HomeViewModel(repo) as T
         }
     }
 }

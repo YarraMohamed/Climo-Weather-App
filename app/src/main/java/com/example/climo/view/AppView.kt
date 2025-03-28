@@ -71,6 +71,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ClimoApp(location: Location) {
+    Log.i("TAG", "ClimoApp: $location")
 
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
@@ -232,10 +233,9 @@ private fun NavigationGraph(navController: NavHostController,location: Location)
             val factory = HomeViewModel.HomeFactory(
                 RepositoryImp.getInstance(
                     WeatherRemoteDataSourceImp(RetrofitHelper.weatherService),
-                    FavouritesLocalDataSourceImp(database.getInstance(context).getFavouritesDAO())
-                ),location)
+                    FavouritesLocalDataSourceImp(database.getInstance(context).getFavouritesDAO())))
             val homeViewModel: HomeViewModel = viewModel(factory = factory)
-            HomeView(homeViewModel)
+            HomeView(homeViewModel,location)
         }
         composable<NavigationRoutes.Settings> { SettingsView() }
         composable<NavigationRoutes.Alerts> { AlertView() }
