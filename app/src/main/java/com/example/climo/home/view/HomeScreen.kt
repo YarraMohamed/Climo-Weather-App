@@ -22,17 +22,10 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Snackbar
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.VerticalAlignmentLine
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -48,6 +41,7 @@ import com.example.climo.home.viewmodel.HomeViewModel
 import com.example.climo.model.CurrentWeather
 import com.example.climo.model.Deatils
 import com.example.climo.model.Response
+import com.example.climo.utilities.ErrorAnimation
 import com.example.climo.utilities.formatDate
 import com.example.climo.utilities.formatTime
 import com.example.climo.view.ui.theme.InterBold
@@ -56,7 +50,6 @@ import com.example.climo.view.ui.theme.InterMedium
 import com.example.climo.view.ui.theme.InterSemiBold
 import com.example.climo.view.ui.theme.RobotoBold
 import com.example.climo.view.ui.theme.RobotoRegular
-import kotlinx.coroutines.launch
 
 @Composable
 fun HomeView(viewModel: HomeViewModel){
@@ -67,8 +60,6 @@ fun HomeView(viewModel: HomeViewModel){
     val timeStatus = viewModel.time.collectAsStateWithLifecycle()
     val dateStatus = viewModel.date.collectAsStateWithLifecycle()
     val scrollState = rememberScrollState()
-    val coroutineScope = rememberCoroutineScope()
-    val snackBarHostState = remember { SnackbarHostState() }
     viewModel.getCurrentTime()
     viewModel.getCurrentDate()
 
@@ -94,6 +85,7 @@ fun HomeView(viewModel: HomeViewModel){
                     modifier = Modifier.padding(top=25.dp, start = 20.dp))
                 when(weatherHourlyForecastStatus.value){
                     is Response.Failure -> {
+                        ErrorAnimation()
                         Toast.makeText(context,(weatherHourlyForecastStatus.value as Response.Failure).err.message,Toast.LENGTH_SHORT).show()
                     }
                     Response.Loading -> {
@@ -115,6 +107,7 @@ fun HomeView(viewModel: HomeViewModel){
 
                 when(weatherDailyForecastStatus.value){
                     is Response.Failure -> {
+                        ErrorAnimation()
                         Toast.makeText(context,(weatherDailyForecastStatus.value as Response.Failure).err.message,Toast.LENGTH_SHORT).show()
                     }
                     Response.Loading -> {
@@ -133,12 +126,10 @@ fun HomeView(viewModel: HomeViewModel){
                 }
             }
             is Response.Failure -> {
+                ErrorAnimation()
                 Toast.makeText(context,(weatherStatus.value as Response.Failure).err.message,Toast.LENGTH_SHORT).show()
             }
         }
-        SnackbarHost(
-            hostState = snackBarHostState,
-        )
     }
 }
 

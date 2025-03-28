@@ -1,5 +1,6 @@
 package com.example.climo.view
 
+import FavMapScreen
 import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationManager
@@ -14,8 +15,6 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.lifecycleScope
-import com.example.climo.data.remote.RetrofitHelper
-import com.example.climo.data.remote.WeatherRemoteDataSourceImp
 import com.example.climo.utilities.ApplicationUtils
 import kotlinx.coroutines.launch
 

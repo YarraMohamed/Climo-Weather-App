@@ -43,4 +43,5 @@
     <string name="nav_photo">Nav_photo</string>
     <string name="home">Home</string>
     <string name="c">°C</string>
+    <string name="add_to_favourites">Add to favourites</string>
 </resources>

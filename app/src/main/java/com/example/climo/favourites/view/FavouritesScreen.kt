@@ -1,7 +1,9 @@
 package com.example.climo.favourites.view
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,79 +22,122 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.animateLottieCompositionAsState
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.example.climo.R
+import com.example.climo.favourites.viewmodel.FavouritesViewModel
 import com.example.climo.model.Alerts
 import com.example.climo.model.Favourites
+import com.example.climo.model.Response
+import com.example.climo.utilities.ErrorAnimation
+import com.example.climo.view.NavigationRoutes
 import com.example.climo.view.ui.theme.GradientBackground
 import com.example.climo.view.ui.theme.InterExtraBold
+import com.example.climo.view.ui.theme.OutfitBold
 import com.example.climo.view.ui.theme.RobotoMedium
 
 @Composable
-fun FavouritesView() {
-    Scaffold (
-        floatingActionButton = {
-            FloatingActionButton(onClick = {},
-                containerColor = colorResource(R.color.white),
-                modifier = Modifier.padding(16.dp)){
-                Image(
-                    painter = painterResource(R.drawable.add_icon),
-                    contentDescription = stringResource(R.string.add_icon),
-                    modifier = Modifier.size(24.dp)
-                )
-            }
-        },
-        containerColor = Color.Transparent
-    ){ paddingValues ->
-        Column(modifier = Modifier
-            .fillMaxSize()
-            .padding(paddingValues)
-        ) {
+fun FavouritesView(viewModel : FavouritesViewModel, navController: NavHostController) {
+    val context = LocalContext.current
+    var favouritesState = viewModel.favList.collectAsStateWithLifecycle()
+    var messageState = viewModel.message.collectAsStateWithLifecycle()
+    val snackBarHostState = remember { SnackbarHostState() }
 
-            Text(text= stringResource(R.string.favourites),
-                color = colorResource(R.color.white),
-                fontSize = 32.sp,
-                fontFamily = InterExtraBold,
-                modifier = Modifier.padding(start = 20.dp))
-
-            FavouritesList()
-        }
-
+    LaunchedEffect(messageState.value) {
+        if(!messageState.value.isNullOrBlank())
+            snackBarHostState.showSnackbar(messageState.value!!, duration = SnackbarDuration.Short)
     }
 
+    when(favouritesState.value){
+        is Response.Failure -> {
+            ErrorAnimation()
+            Toast.makeText(context,"Error in getting data",Toast.LENGTH_SHORT).show()
+        }
+        Response.Loading -> {
+            Row(horizontalArrangement = Arrangement.Center){
+                CircularProgressIndicator(color = colorResource(R.color.white))
+            }
+        }
+        is Response.Success -> {
+            Scaffold (
+                snackbarHost = { SnackbarHost(snackBarHostState) },
+                floatingActionButton = {
+                    FloatingActionButton(onClick = {
+                        navController.navigate(NavigationRoutes.FavMap)
+                    },
+                        containerColor = colorResource(R.color.white),
+                        modifier = Modifier.padding(16.dp)){
+                        Image(
+                            painter = painterResource(R.drawable.add_icon),
+                            contentDescription = stringResource(R.string.add_icon),
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
+                },
+                containerColor = Color.Transparent
+            ){ paddingValues ->
+                Column(modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+                ) {
+
+                    Text(text= stringResource(R.string.favourites),
+                        color = colorResource(R.color.white),
+                        fontSize = 32.sp,
+                        fontFamily = InterExtraBold,
+                        modifier = Modifier.padding(start = 20.dp))
+                    FavouritesList((favouritesState.value as Response.Success).data,viewModel)
+                }
+            }
+
+        }
+    }
 }
 
 @Composable
-private fun FavouritesList(){
-    val favourites = listOf(
-        Favourites("Cairo, Egypt",1.0,2.0),)
+private fun FavouritesList(favourites: List<Favourites>,viewModel: FavouritesViewModel){
     Box(modifier = Modifier
         .fillMaxWidth()
         .padding(top = 20.dp), contentAlignment = Alignment.Center) {
         if(favourites.isNullOrEmpty()){
-            CircularProgressIndicator(color = colorResource(R.color.blue))
+            MapAnimation()
         }
         LazyColumn(verticalArrangement = Arrangement.spacedBy(15.dp),contentPadding = PaddingValues(bottom = 80.dp)){
             items(favourites.size) {
-                FavouriteItem(favourites[it])
+                FavouriteItem(favourites[it]){
+                    viewModel.deleteFav(favourites[it])
+                }
             }
         }
     }
 }
 
 @Composable
-private fun FavouriteItem(favourite: Favourites){
+private fun FavouriteItem(favourite: Favourites, action:()->Unit){
     Card(
-        onClick = {},
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.elevatedCardColors(
             containerColor = colorResource(R.color.dark_blue)),
@@ -101,7 +146,7 @@ private fun FavouriteItem(favourite: Favourites){
             .height(80.dp)){
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxSize()){
             Text(text=favourite.address,
-                fontSize = 26.sp,
+                fontSize = 22.sp,
                 color = colorResource(R.color.white),
                 fontFamily = RobotoMedium,
                 modifier = Modifier
@@ -114,11 +159,36 @@ private fun FavouriteItem(favourite: Favourites){
                 contentDescription = stringResource(R.string.bin_icon),
                 modifier = Modifier
                     .size(50.dp)
-                    .padding(end = 20.dp)
-
+                    .padding(start = 5.dp,end = 20.dp)
+                    .clickable(onClick = action)
             )
         }
     }
+}
+
+@Composable
+private fun MapAnimation(){
+    val lottieComposition by rememberLottieComposition(
+        LottieCompositionSpec.RawRes(R.raw.map_animation)
+    )
+
+    val lottieProgress by animateLottieCompositionAsState(
+        lottieComposition,
+        iterations = LottieConstants.IterateForever,
+        isPlaying = true
+    )
+
+    Column(
+        modifier = Modifier.fillMaxSize().padding(top=150.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        LottieAnimation(
+            composition = lottieComposition,
+            progress = lottieProgress,
+            modifier = Modifier.size(300.dp)
+        )
+    }
+
 }
 
 

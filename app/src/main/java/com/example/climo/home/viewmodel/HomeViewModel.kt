@@ -60,7 +60,10 @@ class HomeViewModel(private val repo:Repository, private val location: Location)
         return try {
             val addresses = geocoder.getFromLocation(lat, lon, 1)
             if (addresses!!.isNotEmpty()) {
-                val address : String? = addresses[0]?.locality +", "+ addresses[0]?.countryName
+                var address : String? = addresses[0]?.adminArea
+                if(address.isNullOrEmpty()){
+                    address = addresses[0]?.countryName
+                }
                 address?:"Address not found"
             } else {
                 "Address not found"
@@ -114,8 +117,6 @@ class HomeViewModel(private val repo:Repository, private val location: Location)
                     }
                     .collect{
                         weatherDailyForecastDetails.value = Response.Success(it)
-                        Log.i("TAG", "List size: ${it.size}")
-                        Log.i("TAG", "List size: ${it}")
                     }
 
             }catch (ex:Exception){

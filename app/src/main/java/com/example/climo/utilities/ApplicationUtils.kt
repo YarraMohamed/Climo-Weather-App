@@ -59,6 +59,7 @@ class ApplicationUtils(private val context: Context){
                 override fun onLocationResult(locationResult: LocationResult) {
                     super.onLocationResult(locationResult)
                     locationState.value = locationResult.lastLocation?:Location(LocationManager.GPS_PROVIDER)
+                    fusedLocationProviderClient.removeLocationUpdates(this)
                 }
             },
             Looper.myLooper()
@@ -70,17 +71,20 @@ class ApplicationUtils(private val context: Context){
         val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
         context.startActivity(intent)
     }
-
-    fun getAddressFromLocation(location: Location, geocoder: Geocoder): String {
-        return try {
-            val addresses = geocoder.getFromLocation(location.latitude, location.longitude, 1)
-            if (addresses!!.isNotEmpty()) {
-                addresses[0].getAddressLine(0) ?: "Address not found"
-            } else {
-                "Address not found"
+    companion object{
+        fun getAddressFromLocation(lat: Double,lon:Double, geocoder: Geocoder): String {
+            return try {
+                val addresses = geocoder.getFromLocation(lat, lon, 1)
+                if (addresses!!.isNotEmpty()) {
+                    val address = addresses[0].subAdminArea + ", " + addresses[0].countryName
+                    address ?: "Address not found"
+                } else {
+                    "Address not found"
+                }
+            } catch (e: Exception) {
+                "Error retrieving address"
             }
-        } catch (e: Exception) {
-            "Error retrieving address"
         }
     }
+
 }
