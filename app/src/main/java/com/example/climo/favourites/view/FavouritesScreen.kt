@@ -109,7 +109,7 @@ fun FavouritesView(viewModel : FavouritesViewModel, navController: NavHostContro
                         fontSize = 32.sp,
                         fontFamily = InterExtraBold,
                         modifier = Modifier.padding(start = 20.dp))
-                    FavouritesList((favouritesState.value as Response.Success).data,viewModel)
+                    FavouritesList((favouritesState.value as Response.Success).data,viewModel,navController)
                 }
             }
 
@@ -118,7 +118,7 @@ fun FavouritesView(viewModel : FavouritesViewModel, navController: NavHostContro
 }
 
 @Composable
-private fun FavouritesList(favourites: List<Favourites>,viewModel: FavouritesViewModel){
+private fun FavouritesList(favourites: List<Favourites>,viewModel: FavouritesViewModel,navController: NavHostController){
     Box(modifier = Modifier
         .fillMaxWidth()
         .padding(top = 20.dp), contentAlignment = Alignment.Center) {
@@ -127,23 +127,24 @@ private fun FavouritesList(favourites: List<Favourites>,viewModel: FavouritesVie
         }
         LazyColumn(verticalArrangement = Arrangement.spacedBy(15.dp),contentPadding = PaddingValues(bottom = 80.dp)){
             items(favourites.size) {
-                FavouriteItem(favourites[it]){
-                    viewModel.deleteFav(favourites[it])
-                }
+                FavouriteItem(
+                    favourite = favourites[it],
+                    {viewModel.deleteFav(favourites[it])},
+                    { lat,lon -> navController.navigate(NavigationRoutes.Home(lat,lon))})
             }
         }
     }
 }
 
 @Composable
-private fun FavouriteItem(favourite: Favourites, action:()->Unit){
+private fun FavouriteItem(favourite: Favourites, action:()->Unit, nav : (lat:Double,lon:Double)->Unit){
     Card(
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.elevatedCardColors(
             containerColor = colorResource(R.color.dark_blue)),
         modifier = Modifier
             .width(350.dp)
-            .height(80.dp)){
+            .height(80.dp).clickable(onClick = {nav(favourite.latitude,favourite.longitude)})){
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxSize()){
             Text(text=favourite.address,
                 fontSize = 22.sp,

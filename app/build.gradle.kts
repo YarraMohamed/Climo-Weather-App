@@ -91,6 +91,7 @@ dependencies {
     //Map
     implementation("com.google.maps.android:maps-compose:4.3.3")
     implementation("com.google.android.gms:play-services-maps:19.1.0")
+    implementation("com.google.android.libraries.places:places:3.5.0")
 
     //Room
     implementation("androidx.room:room-ktx:2.6.1")

@@ -13,13 +13,13 @@ import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.lifecycleScope
+import com.example.climo.R
 import com.example.climo.utilities.ApplicationUtils
+import com.google.android.libraries.places.api.Places
 import kotlinx.coroutines.launch
 
 const val REQUEST_LOCATION_CODE = 2005
@@ -31,6 +31,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if(!applicationUtils.isLocationEnabled()) applicationUtils.enableLocationService(this)
+        Places.initialize(applicationContext, getString(R.string.API_KEY))
         setContent {
             location = locationState.value
             Log.i("TAG", "location $location ")

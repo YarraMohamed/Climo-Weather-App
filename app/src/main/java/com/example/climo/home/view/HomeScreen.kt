@@ -54,13 +54,14 @@ import com.example.climo.view.ui.theme.RobotoBold
 import com.example.climo.view.ui.theme.RobotoRegular
 
 @Composable
-fun HomeView(viewModel: HomeViewModel,location: Location){
+fun HomeView(viewModel: HomeViewModel,lat: Double,lon:Double){
 
-    LaunchedEffect(location) {
-        viewModel.getCurrentWeather(location.latitude,location.longitude)
-        viewModel.getDailyWeatherForecast(location.latitude,location.longitude)
-        viewModel.getHourlyWeatherForecast(location.latitude,location.longitude)
+    LaunchedEffect(lat,lon) {
+        viewModel.getCurrentWeather(lat, lon)
+        viewModel.getDailyWeatherForecast(lat, lon)
+        viewModel.getHourlyWeatherForecast(lat, lon)
     }
+
     val context = LocalContext.current
     val weatherStatus = viewModel.currentWeather.collectAsStateWithLifecycle()
     val weatherHourlyForecastStatus = viewModel.currentWeatherForecast.collectAsStateWithLifecycle()

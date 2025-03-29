@@ -1,6 +1,7 @@
 package com.example.climo.view
 
 import FavMapScreen
+import android.location.Geocoder
 import android.location.Location
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -51,6 +52,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import com.example.climo.R
 import com.example.climo.alerts.view.AlertView
 import com.example.climo.data.RepositoryImp
@@ -148,7 +150,7 @@ private fun DrawerContent(navController: NavHostController,drawerState: DrawerSt
                         modifier = Modifier
                             .align(Alignment.CenterVertically)
                             .clickable {
-                                navController.navigate(NavigationRoutes.Home)
+                                navController.navigate(NavigationRoutes.Home())
                                 scope.launch { drawerState.close() }
                             }
                 )
@@ -229,13 +231,18 @@ private fun NavigationGraph(navController: NavHostController,location: Location)
     NavHost(navController = navController, startDestination = NavigationRoutes.Splash) {
         composable<NavigationRoutes.Splash> { SplashScreenView(navController) }
 
-        composable<NavigationRoutes.Home> {
+        composable<NavigationRoutes.Home> { backStackEntry ->
+            val data  = backStackEntry.toRoute() as NavigationRoutes.Home
+
+            var selectedLat = if(data.lat==0.0)location.latitude else data.lat
+            var selectedLon = if(data.lon==0.0)location.longitude else data.lon
+
             val factory = HomeViewModel.HomeFactory(
                 RepositoryImp.getInstance(
                     WeatherRemoteDataSourceImp(RetrofitHelper.weatherService),
                     FavouritesLocalDataSourceImp(database.getInstance(context).getFavouritesDAO())))
             val homeViewModel: HomeViewModel = viewModel(factory = factory)
-            HomeView(homeViewModel,location)
+            HomeView(homeViewModel,selectedLat,selectedLon)
         }
         composable<NavigationRoutes.Settings> { SettingsView() }
         composable<NavigationRoutes.Alerts> { AlertView() }
@@ -252,7 +259,8 @@ private fun NavigationGraph(navController: NavHostController,location: Location)
             val factory = MapViewModel.MapFactory(
                 RepositoryImp.getInstance(
                     WeatherRemoteDataSourceImp(RetrofitHelper.weatherService),
-                    FavouritesLocalDataSourceImp(database.getInstance(context).getFavouritesDAO())))
+                    FavouritesLocalDataSourceImp(database.getInstance(context).getFavouritesDAO())),
+                Geocoder(context))
             val mapViewModel : MapViewModel = viewModel(factory=factory)
             FavMapScreen(mapViewModel)
         }

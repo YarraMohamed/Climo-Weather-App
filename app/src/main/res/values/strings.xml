@@ -44,4 +44,5 @@
     <string name="home">Home</string>
     <string name="c">°C</string>
     <string name="add_to_favourites">Add to favourites</string>
+    <string name="API_KEY">AIzaSyDM-junsji3WW5ASGT1zIirl4kQrMhjKvA</string>
 </resources>

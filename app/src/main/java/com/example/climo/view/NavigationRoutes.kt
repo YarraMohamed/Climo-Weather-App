@@ -8,7 +8,7 @@ sealed class NavigationRoutes {
     @Serializable
     object Splash : NavigationRoutes()
     @Serializable
-    object Home : NavigationRoutes()
+    data class Home(val lat:Double=0.000,val lon:Double=0.000) : NavigationRoutes()
     @Serializable
     object Settings : NavigationRoutes()
     @Serializable
