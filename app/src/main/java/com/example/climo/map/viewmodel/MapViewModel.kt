@@ -44,7 +44,7 @@ class MapViewModel(private val repo: Repository,private val geocoder: Geocoder) 
     private val token = AutocompleteSessionToken.newInstance()
 
     fun addFav(favourite: Favourites) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             try {
                 repo.addFavourite(favourite)
                 messageFlow.value = "${favourite.address} is added to favourites"

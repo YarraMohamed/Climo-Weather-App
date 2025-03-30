@@ -29,7 +29,7 @@ class FavouritesViewModel(private val repo: Repository) : ViewModel(){
     var message = messageFlow.asStateFlow()
 
     fun getFav() {
-        viewModelScope.launch{
+        viewModelScope.launch(Dispatchers.IO){
             try {
                 repo.getFavourites()
                     .catch { favouritesFlow.value = Response.Failure(Throwable("Error getting list")) }
@@ -43,7 +43,7 @@ class FavouritesViewModel(private val repo: Repository) : ViewModel(){
     }
 
     fun deleteFav(favourite: Favourites){
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             try {
                 repo.deleteFavourite(favourite)
                 messageFlow.value = "${favourite.address} is deleted Successfully"

@@ -16,6 +16,7 @@ import com.example.climo.model.Response
 import com.example.climo.model.WeatherList
 import com.example.climo.utilities.getFormattedDate
 import com.example.climo.utilities.getFromattedTime
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.filter
@@ -68,7 +69,7 @@ class HomeViewModel(private val repo:Repository) : ViewModel(){
     }
 
     fun getCurrentWeather(lat:Double,lon:Double){
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             try {
                 repo.getCurrentWeather(lat,lon)
                     .catch { weatherDetails.value = Response.Failure(Throwable("Error getting data")) }
@@ -84,7 +85,7 @@ class HomeViewModel(private val repo:Repository) : ViewModel(){
 
 
     fun getHourlyWeatherForecast(lat:Double,lon:Double){
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             try {
                 repo.getCurrentForecast(lat,lon)
                     .catch { weatherHourlyForecastDetails.value = Response.Failure(Throwable("Error getting data")) }
@@ -100,7 +101,7 @@ class HomeViewModel(private val repo:Repository) : ViewModel(){
 
 
     fun getDailyWeatherForecast(lat:Double,lon:Double){
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             try {
                 repo.getCurrentForecast(lat,lon)
                     .catch { weatherDailyForecastDetails.value = Response.Failure(Throwable("Error getting data")) }

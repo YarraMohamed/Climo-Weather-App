@@ -56,7 +56,7 @@ import androidx.navigation.toRoute
 import com.example.climo.R
 import com.example.climo.alerts.view.AlertView
 import com.example.climo.data.RepositoryImp
-import com.example.climo.data.db.database
+import com.example.climo.data.db.AppDatabase
 import com.example.climo.data.local.FavouritesLocalDataSourceImp
 import com.example.climo.data.remote.RetrofitHelper
 import com.example.climo.data.remote.WeatherRemoteDataSourceImp
@@ -240,7 +240,7 @@ private fun NavigationGraph(navController: NavHostController,location: Location)
             val factory = HomeViewModel.HomeFactory(
                 RepositoryImp.getInstance(
                     WeatherRemoteDataSourceImp(RetrofitHelper.weatherService),
-                    FavouritesLocalDataSourceImp(database.getInstance(context).getFavouritesDAO())))
+                    FavouritesLocalDataSourceImp(AppDatabase.getInstance(context).getFavouritesDAO())))
             val homeViewModel: HomeViewModel = viewModel(factory = factory)
             HomeView(homeViewModel,selectedLat,selectedLon)
         }
@@ -251,7 +251,7 @@ private fun NavigationGraph(navController: NavHostController,location: Location)
             val factory = FavouritesViewModel.FavouritesFactory(
                 RepositoryImp.getInstance(
                     WeatherRemoteDataSourceImp(RetrofitHelper.weatherService),
-                    FavouritesLocalDataSourceImp(database.getInstance(context).getFavouritesDAO())))
+                    FavouritesLocalDataSourceImp(AppDatabase.getInstance(context).getFavouritesDAO())))
             val favouritesViewModel : FavouritesViewModel = viewModel(factory=factory)
             FavouritesView(favouritesViewModel,navController)
         }
@@ -259,7 +259,7 @@ private fun NavigationGraph(navController: NavHostController,location: Location)
             val factory = MapViewModel.MapFactory(
                 RepositoryImp.getInstance(
                     WeatherRemoteDataSourceImp(RetrofitHelper.weatherService),
-                    FavouritesLocalDataSourceImp(database.getInstance(context).getFavouritesDAO())),
+                    FavouritesLocalDataSourceImp(AppDatabase.getInstance(context).getFavouritesDAO())),
                 Geocoder(context))
             val mapViewModel : MapViewModel = viewModel(factory=factory)
             FavMapScreen(mapViewModel)

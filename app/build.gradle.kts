@@ -113,6 +113,7 @@ dependencies {
     testImplementation ("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.1")
     androidTestImplementation ("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.1")
 
+
     // InstantTaskExecutorRule
     testImplementation ("androidx.arch.core:core-testing:2.1.0")
     androidTestImplementation ("androidx.arch.core:core-testing:2.1.0")

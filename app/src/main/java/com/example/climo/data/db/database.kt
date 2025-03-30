@@ -7,17 +7,17 @@ import androidx.room.RoomDatabase
 import com.example.climo.model.Favourites
 
 @Database(entities = arrayOf(Favourites::class), version = 1)
-abstract class database :RoomDatabase() {
+abstract class AppDatabase :RoomDatabase() {
     abstract fun getFavouritesDAO() : FavouritesDAO
 
     companion object {
         @Volatile
-        private var instance: database? = null
+        private var instance: AppDatabase? = null
 
-        fun getInstance(context: Context): database {
+        fun getInstance(context: Context): AppDatabase {
             return instance ?: synchronized(this) {
                 val dbInstance = Room.databaseBuilder(
-                    context.applicationContext, database::class.java, "weather_db"
+                    context.applicationContext, AppDatabase::class.java, "weather_db"
                 ).fallbackToDestructiveMigration()
                     .build()
                 instance = dbInstance
