@@ -3,8 +3,10 @@ package com.example.climo
 import com.example.climo.data.Repository
 import com.example.climo.data.RepositoryImp
 import com.example.climo.data.local.FakeFavouritesLocalDataSource
+import com.example.climo.data.local.FakeWeatherLocalDataSource
 import com.example.climo.data.remote.FakeWeatherRemoteDataSource
 import com.example.climo.model.Favourites
+import io.mockk.mockk
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.hamcrest.CoreMatchers.equalTo
@@ -17,13 +19,15 @@ class RepositoryTest {
 
     private lateinit var favouritesLocalDataSource: FakeFavouritesLocalDataSource
     private lateinit var weatherRemoteDataSource: FakeWeatherRemoteDataSource
+    private lateinit var weatherLocalDataSource: FakeWeatherLocalDataSource
     private lateinit var repository: Repository
 
    @Before
    fun setup(){
        favouritesLocalDataSource = FakeFavouritesLocalDataSource()
        weatherRemoteDataSource = FakeWeatherRemoteDataSource()
-       repository = RepositoryImp.getInstance(weatherRemoteDataSource,favouritesLocalDataSource)
+       weatherLocalDataSource = mockk(relaxed = true)
+       repository = RepositoryImp.getInstance(weatherRemoteDataSource,favouritesLocalDataSource,weatherLocalDataSource)
    }
 
     @Test

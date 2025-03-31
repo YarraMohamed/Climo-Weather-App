@@ -54,12 +54,12 @@ class ApplicationUtils(private val context: Context){
         fusedLocationProviderClient.requestLocationUpdates(
             LocationRequest.Builder(5000).apply {
                 setPriority(Priority.PRIORITY_HIGH_ACCURACY)
+                    .setMinUpdateDistanceMeters(1000f)
             }.build(),
             object :LocationCallback(){
                 override fun onLocationResult(locationResult: LocationResult) {
                     super.onLocationResult(locationResult)
                     locationState.value = locationResult.lastLocation?:Location(LocationManager.GPS_PROVIDER)
-                    fusedLocationProviderClient.removeLocationUpdates(this)
                 }
             },
             Looper.myLooper()

@@ -2,6 +2,7 @@ package com.example.climo.home.view
 
 import android.location.Geocoder
 import android.location.Location
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -26,6 +27,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -55,11 +57,12 @@ import com.example.climo.view.ui.theme.RobotoRegular
 
 @Composable
 fun HomeView(viewModel: HomeViewModel,lat: Double,lon:Double){
-
-    LaunchedEffect(lat,lon) {
-        viewModel.getCurrentWeather(lat, lon)
-        viewModel.getDailyWeatherForecast(lat, lon)
-        viewModel.getHourlyWeatherForecast(lat, lon)
+    val isConnected by viewModel.isConnected.collectAsStateWithLifecycle()
+    Log.i("TAG", "HomeView: $lat $lon")
+    LaunchedEffect(lat,lon,isConnected) {
+        viewModel.getCurrentWeather(lat, lon,isConnected)
+        viewModel.getDailyWeatherForecast(lat, lon,isConnected)
+        viewModel.getHourlyWeatherForecast(lat, lon,isConnected)
     }
 
     val context = LocalContext.current
@@ -94,8 +97,9 @@ fun HomeView(viewModel: HomeViewModel,lat: Double,lon:Double){
                     modifier = Modifier.padding(top=25.dp, start = 20.dp))
                 when(weatherHourlyForecastStatus.value){
                     is Response.Failure -> {
-                        ErrorAnimation()
-                        Toast.makeText(context,(weatherHourlyForecastStatus.value as Response.Failure).err.message,Toast.LENGTH_SHORT).show()
+                        if(!isConnected){
+                            ErrorAnimation()
+                        }
                     }
                     Response.Loading -> {
                         CircularProgressIndicator(color = colorResource(R.color.white), modifier = Modifier
@@ -116,8 +120,9 @@ fun HomeView(viewModel: HomeViewModel,lat: Double,lon:Double){
 
                 when(weatherDailyForecastStatus.value){
                     is Response.Failure -> {
-                        ErrorAnimation()
-                        Toast.makeText(context,(weatherDailyForecastStatus.value as Response.Failure).err.message,Toast.LENGTH_SHORT).show()
+                        if(!isConnected){
+                            ErrorAnimation()
+                        }
                     }
                     Response.Loading -> {
                         CircularProgressIndicator(color = colorResource(R.color.white), modifier = Modifier
@@ -135,8 +140,9 @@ fun HomeView(viewModel: HomeViewModel,lat: Double,lon:Double){
                 }
             }
             is Response.Failure -> {
-                ErrorAnimation()
-                Toast.makeText(context,(weatherStatus.value as Response.Failure).err.message,Toast.LENGTH_SHORT).show()
+                if(!isConnected){
+                    ErrorAnimation()
+                }
             }
         }
     }

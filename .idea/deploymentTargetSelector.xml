@@ -8,12 +8,6 @@
       <SelectionState runConfigName="FavouritesDAOTest">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="getFavouriteList_retrieveFreshListWithItems()">
-        <option name="selectionMode" value="DROPDOWN" />
-      </SelectionState>
-      <SelectionState runConfigName="addFav_retrieveFreshListWithNewFav()">
-        <option name="selectionMode" value="DROPDOWN" />
-      </SelectionState>
       <SelectionState runConfigName="FavouritesLocalDataSourceTest">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>

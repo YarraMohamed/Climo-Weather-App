@@ -1,5 +1,7 @@
 package com.example.climo.home.viewmodel
 
+import androidx.test.core.app.ApplicationProvider
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.climo.data.Repository
 import com.example.climo.data.RepositoryImp
 import com.example.climo.data.local.FavouritesLocalDataSource
@@ -11,6 +13,7 @@ import com.example.climo.model.Main
 import com.example.climo.model.Response
 import com.example.climo.model.Weather
 import com.example.climo.model.Wind
+import com.example.climo.utilities.ConnectivityListener
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
@@ -18,6 +21,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.last
+import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
@@ -29,9 +33,10 @@ import org.hamcrest.MatcherAssert.assertThat
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers.isNotNull
 
-
+@RunWith(AndroidJUnit4::class)
 class HomeViewModelTest{
     private lateinit var repository: Repository
     private lateinit var viewModel: HomeViewModel
@@ -53,14 +58,14 @@ class HomeViewModelTest{
     @OptIn(ExperimentalCoroutinesApi::class)
     @Before
     fun setup() = runTest{
-        Dispatchers.setMain(Dispatchers.IO)
+        Dispatchers.setMain(StandardTestDispatcher())
         repository = mockk()
 
         coEvery {
             repository.getCurrentWeather(31.0,32.0)
         }returns flowOf(fakeCurrentWeather)
 
-        viewModel = HomeViewModel(repository)
+        viewModel = HomeViewModel(repository, ConnectivityListener(ApplicationProvider.getApplicationContext()))
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -77,7 +82,7 @@ class HomeViewModelTest{
 
         // When
         advanceUntilIdle()
-        viewModel.getCurrentWeather(lat, lon)
+        viewModel.getCurrentWeather(lat, lon,true)
         val result = viewModel.currentWeather.first{
             it is Response.Success
         }

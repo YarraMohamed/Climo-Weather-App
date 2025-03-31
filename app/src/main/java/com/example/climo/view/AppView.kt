@@ -58,6 +58,7 @@ import com.example.climo.alerts.view.AlertView
 import com.example.climo.data.RepositoryImp
 import com.example.climo.data.db.AppDatabase
 import com.example.climo.data.local.FavouritesLocalDataSourceImp
+import com.example.climo.data.local.WeatherLocalDataSourceImp
 import com.example.climo.data.remote.RetrofitHelper
 import com.example.climo.data.remote.WeatherRemoteDataSourceImp
 import com.example.climo.favourites.view.FavouritesView
@@ -66,6 +67,7 @@ import com.example.climo.home.view.HomeView
 import com.example.climo.home.viewmodel.HomeViewModel
 import com.example.climo.map.viewmodel.MapViewModel
 import com.example.climo.settings.view.SettingsView
+import com.example.climo.utilities.ConnectivityListener
 import com.example.climo.view.ui.theme.GradientBackground
 import com.example.climo.view.ui.theme.RobotoRegular
 import kotlinx.coroutines.launch
@@ -73,7 +75,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ClimoApp(location: Location) {
-    Log.i("TAG", "ClimoApp: $location")
+    Log.i("TAG", "ClimoApp111: $location")
 
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
@@ -240,7 +242,9 @@ private fun NavigationGraph(navController: NavHostController,location: Location)
             val factory = HomeViewModel.HomeFactory(
                 RepositoryImp.getInstance(
                     WeatherRemoteDataSourceImp(RetrofitHelper.weatherService),
-                    FavouritesLocalDataSourceImp(AppDatabase.getInstance(context).getFavouritesDAO())))
+                    FavouritesLocalDataSourceImp(AppDatabase.getInstance(context).getFavouritesDAO()),
+                    WeatherLocalDataSourceImp(AppDatabase.getInstance(context).getWeatherDAO())),
+                ConnectivityListener(context))
             val homeViewModel: HomeViewModel = viewModel(factory = factory)
             HomeView(homeViewModel,selectedLat,selectedLon)
         }
@@ -251,7 +255,8 @@ private fun NavigationGraph(navController: NavHostController,location: Location)
             val factory = FavouritesViewModel.FavouritesFactory(
                 RepositoryImp.getInstance(
                     WeatherRemoteDataSourceImp(RetrofitHelper.weatherService),
-                    FavouritesLocalDataSourceImp(AppDatabase.getInstance(context).getFavouritesDAO())))
+                    FavouritesLocalDataSourceImp(AppDatabase.getInstance(context).getFavouritesDAO()),
+                    WeatherLocalDataSourceImp(AppDatabase.getInstance(context).getWeatherDAO())))
             val favouritesViewModel : FavouritesViewModel = viewModel(factory=factory)
             FavouritesView(favouritesViewModel,navController)
         }
@@ -259,7 +264,8 @@ private fun NavigationGraph(navController: NavHostController,location: Location)
             val factory = MapViewModel.MapFactory(
                 RepositoryImp.getInstance(
                     WeatherRemoteDataSourceImp(RetrofitHelper.weatherService),
-                    FavouritesLocalDataSourceImp(AppDatabase.getInstance(context).getFavouritesDAO())),
+                    FavouritesLocalDataSourceImp(AppDatabase.getInstance(context).getFavouritesDAO()),
+                    WeatherLocalDataSourceImp(AppDatabase.getInstance(context).getWeatherDAO())),
                 Geocoder(context))
             val mapViewModel : MapViewModel = viewModel(factory=factory)
             FavMapScreen(mapViewModel)

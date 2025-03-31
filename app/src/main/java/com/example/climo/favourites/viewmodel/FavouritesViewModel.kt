@@ -46,12 +46,22 @@ class FavouritesViewModel(private val repo: Repository) : ViewModel(){
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 repo.deleteFavourite(favourite)
+                deleteFavStoredDetails(favourite.latitude,favourite.longitude)
                 messageFlow.value = "${favourite.address} is deleted Successfully"
             }catch (ex:Exception){
-
+                messageFlow.value = "Something went wrong"
             }
         }
     }
+
+    private fun deleteFavStoredDetails(lat:Double,lon:Double){
+        viewModelScope.launch (Dispatchers.IO){
+            repo.deleteWeatherStatus(lat,lon)
+            repo.deleteHourlyDetails(lat,lon)
+            repo.deleteDailyDetails(lat,lon)
+        }
+    }
+
 
     class FavouritesFactory(private val repo: Repository) : ViewModelProvider.Factory{
         override fun <T : ViewModel> create(modelClass: Class<T>): T {

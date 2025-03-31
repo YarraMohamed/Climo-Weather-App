@@ -8,6 +8,7 @@ import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.hamcrest.CoreMatchers.equalTo
@@ -32,7 +33,7 @@ class FavouritesViewModelTest{
 
     @Before
     fun setup(){
-        Dispatchers.setMain(Dispatchers.IO)
+        Dispatchers.setMain(StandardTestDispatcher())
         repository = mockk()
         viewModel = FavouritesViewModel(repository)
         coEvery {

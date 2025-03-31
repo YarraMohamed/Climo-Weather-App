@@ -1,21 +1,12 @@
-package com.example.climo.data
+package com.example.climo.data.local
 
-import com.example.climo.model.CurrentWeather
 import com.example.climo.model.DailyDetails
 import com.example.climo.model.Deatils
-import com.example.climo.model.Favourites
 import com.example.climo.model.HorulyDetails
-import com.example.climo.model.WeatherList
 import com.example.climo.model.WeatherStatus
 import kotlinx.coroutines.flow.Flow
 
-interface Repository {
-    suspend fun getCurrentWeather(lat:Double,lon:Double) : Flow<CurrentWeather>
-    suspend fun getCurrentForecast(lat:Double,lon:Double) : Flow<WeatherList>
-
-    suspend fun getFavourites() : Flow<List<Favourites>>
-    suspend fun addFavourite(favourite: Favourites)
-    suspend fun deleteFavourite(favourite: Favourites)
+interface WeatherLocalDataSource {
 
     suspend fun getWeatherStatus(lat:Double,lon:Double) :Flow<WeatherStatus?>
     suspend fun insertWeatherStatus(weatherStatus: WeatherStatus)
