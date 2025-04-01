@@ -1,6 +1,11 @@
 package com.example.climo.model
 
-import kotlinx.serialization.Serializable
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 
-@Serializable
-data class Alerts(val address:String,val startTime:String,val endTime:String)
+@Entity(tableName = "alerts_table")
+data class Alerts(
+    @PrimaryKey(autoGenerate = true) var id: Int = 0,
+    val address:String,
+    val startTime:String,
+    val endTime:String)

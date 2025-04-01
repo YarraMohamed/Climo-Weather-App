@@ -55,8 +55,10 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.example.climo.R
 import com.example.climo.alerts.view.AlertView
+import com.example.climo.alerts.viewmodel.AlertsViewModel
 import com.example.climo.data.RepositoryImp
 import com.example.climo.data.db.AppDatabase
+import com.example.climo.data.local.AlertsLocalDataSourceImp
 import com.example.climo.data.local.FavouritesLocalDataSourceImp
 import com.example.climo.data.local.WeatherLocalDataSourceImp
 import com.example.climo.data.remote.RetrofitHelper
@@ -243,20 +245,31 @@ private fun NavigationGraph(navController: NavHostController,location: Location)
                 RepositoryImp.getInstance(
                     WeatherRemoteDataSourceImp(RetrofitHelper.weatherService),
                     FavouritesLocalDataSourceImp(AppDatabase.getInstance(context).getFavouritesDAO()),
-                    WeatherLocalDataSourceImp(AppDatabase.getInstance(context).getWeatherDAO())),
+                    WeatherLocalDataSourceImp(AppDatabase.getInstance(context).getWeatherDAO()),
+                    AlertsLocalDataSourceImp(AppDatabase.getInstance(context).getAlertsDao())),
                 ConnectivityListener(context))
             val homeViewModel: HomeViewModel = viewModel(factory = factory)
             HomeView(homeViewModel,selectedLat,selectedLon)
         }
         composable<NavigationRoutes.Settings> { SettingsView() }
-        composable<NavigationRoutes.Alerts> { AlertView() }
+        composable<NavigationRoutes.Alerts> {
+            val factory = AlertsViewModel.AlertsFactory(
+                RepositoryImp.getInstance(
+                    WeatherRemoteDataSourceImp(RetrofitHelper.weatherService),
+                    FavouritesLocalDataSourceImp(AppDatabase.getInstance(context).getFavouritesDAO()),
+                    WeatherLocalDataSourceImp(AppDatabase.getInstance(context).getWeatherDAO()),
+                    AlertsLocalDataSourceImp(AppDatabase.getInstance(context).getAlertsDao())))
+            val alertsViewModel : AlertsViewModel = viewModel(factory= factory)
+            AlertView(alertsViewModel,location.latitude,location.latitude)
+        }
 
         composable<NavigationRoutes.Favourites> {
             val factory = FavouritesViewModel.FavouritesFactory(
                 RepositoryImp.getInstance(
                     WeatherRemoteDataSourceImp(RetrofitHelper.weatherService),
                     FavouritesLocalDataSourceImp(AppDatabase.getInstance(context).getFavouritesDAO()),
-                    WeatherLocalDataSourceImp(AppDatabase.getInstance(context).getWeatherDAO())))
+                    WeatherLocalDataSourceImp(AppDatabase.getInstance(context).getWeatherDAO()),
+                    AlertsLocalDataSourceImp(AppDatabase.getInstance(context).getAlertsDao())))
             val favouritesViewModel : FavouritesViewModel = viewModel(factory=factory)
             FavouritesView(favouritesViewModel,navController)
         }
@@ -265,7 +278,8 @@ private fun NavigationGraph(navController: NavHostController,location: Location)
                 RepositoryImp.getInstance(
                     WeatherRemoteDataSourceImp(RetrofitHelper.weatherService),
                     FavouritesLocalDataSourceImp(AppDatabase.getInstance(context).getFavouritesDAO()),
-                    WeatherLocalDataSourceImp(AppDatabase.getInstance(context).getWeatherDAO())),
+                    WeatherLocalDataSourceImp(AppDatabase.getInstance(context).getWeatherDAO()),
+                    AlertsLocalDataSourceImp(AppDatabase.getInstance(context).getAlertsDao())),
                 Geocoder(context))
             val mapViewModel : MapViewModel = viewModel(factory=factory)
             FavMapScreen(mapViewModel)

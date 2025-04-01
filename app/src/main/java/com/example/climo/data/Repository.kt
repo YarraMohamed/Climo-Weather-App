@@ -1,5 +1,6 @@
 package com.example.climo.data
 
+import com.example.climo.model.Alerts
 import com.example.climo.model.CurrentWeather
 import com.example.climo.model.DailyDetails
 import com.example.climo.model.Deatils
@@ -28,6 +29,10 @@ interface Repository {
     suspend fun getDailyDetails(lat: Double,lon: Double) : Flow<DailyDetails?>
     suspend fun insertDailyDetails(dailyDetails: DailyDetails)
     suspend fun deleteDailyDetails(lat: Double,lon: Double)
+
+    suspend fun getAlerts() : Flow<List<Alerts>>
+    suspend fun addAlert(alert:Alerts)
+    suspend fun deleteAlert(alert: Alerts)
 
 
 }

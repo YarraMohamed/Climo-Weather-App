@@ -2,6 +2,7 @@ package com.example.climo
 
 import com.example.climo.data.Repository
 import com.example.climo.data.RepositoryImp
+import com.example.climo.data.local.FakeAlertsLocalDataSource
 import com.example.climo.data.local.FakeFavouritesLocalDataSource
 import com.example.climo.data.local.FakeWeatherLocalDataSource
 import com.example.climo.data.remote.FakeWeatherRemoteDataSource
@@ -20,6 +21,7 @@ class RepositoryTest {
     private lateinit var favouritesLocalDataSource: FakeFavouritesLocalDataSource
     private lateinit var weatherRemoteDataSource: FakeWeatherRemoteDataSource
     private lateinit var weatherLocalDataSource: FakeWeatherLocalDataSource
+    private lateinit var alertsLocalDataSource : FakeAlertsLocalDataSource
     private lateinit var repository: Repository
 
    @Before
@@ -27,7 +29,8 @@ class RepositoryTest {
        favouritesLocalDataSource = FakeFavouritesLocalDataSource()
        weatherRemoteDataSource = FakeWeatherRemoteDataSource()
        weatherLocalDataSource = mockk(relaxed = true)
-       repository = RepositoryImp.getInstance(weatherRemoteDataSource,favouritesLocalDataSource,weatherLocalDataSource)
+       alertsLocalDataSource = mockk(relaxed = true)
+       repository = RepositoryImp.getInstance(weatherRemoteDataSource,favouritesLocalDataSource,weatherLocalDataSource,alertsLocalDataSource)
    }
 
     @Test

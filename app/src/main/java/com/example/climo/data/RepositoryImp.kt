@@ -1,8 +1,10 @@
 package com.example.climo.data
 
+import com.example.climo.data.local.AlertsLocalDataSource
 import com.example.climo.data.local.FavouritesLocalDataSource
 import com.example.climo.data.local.WeatherLocalDataSource
 import com.example.climo.data.remote.WeatherRemoteDataSource
+import com.example.climo.model.Alerts
 import com.example.climo.model.CurrentWeather
 import com.example.climo.model.DailyDetails
 import com.example.climo.model.Deatils
@@ -16,7 +18,8 @@ import kotlinx.coroutines.flow.map
 class RepositoryImp private constructor (
     private val weatherRemoteDataSourceImp: WeatherRemoteDataSource,
     private val favouritesLocalDataSourceImp: FavouritesLocalDataSource,
-    private val weatherLocalDataSourceImp:WeatherLocalDataSource) :Repository {
+    private val weatherLocalDataSourceImp:WeatherLocalDataSource,
+    private val alertsLocalDataSourceImp:AlertsLocalDataSource):Repository {
 
 
     override suspend fun getCurrentWeather(lat:Double,lon:Double): Flow<CurrentWeather> {
@@ -75,16 +78,29 @@ class RepositoryImp private constructor (
         return weatherLocalDataSourceImp.deleteDailyDetails(lat, lon)
     }
 
+    override suspend fun getAlerts(): Flow<List<Alerts>> {
+        return alertsLocalDataSourceImp.getAlerts()
+    }
+
+    override suspend fun addAlert(alert: Alerts) {
+        return alertsLocalDataSourceImp.addAlert(alert)
+    }
+
+    override suspend fun deleteAlert(alert: Alerts) {
+        return alertsLocalDataSourceImp.deleteAlert(alert)
+    }
+
     companion object {
         private val repository: Repository? = null
 
         fun getInstance(
             weatherRemoteDataSourceImp: WeatherRemoteDataSource,
             favouritesLocalDataSourceImp: FavouritesLocalDataSource,
-            weatherLocalDataSourceImp:WeatherLocalDataSource
+            weatherLocalDataSourceImp:WeatherLocalDataSource,
+            alertsLocalDataSourceImp:AlertsLocalDataSource
         ): Repository {
             if (repository == null) {
-                return RepositoryImp(weatherRemoteDataSourceImp,favouritesLocalDataSourceImp,weatherLocalDataSourceImp)
+                return RepositoryImp(weatherRemoteDataSourceImp,favouritesLocalDataSourceImp,weatherLocalDataSourceImp,alertsLocalDataSourceImp)
             }
             return repository
         }
