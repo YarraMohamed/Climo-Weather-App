@@ -58,7 +58,6 @@ import com.example.climo.view.ui.theme.RobotoRegular
 @Composable
 fun HomeView(viewModel: HomeViewModel,lat: Double,lon:Double){
     val isConnected by viewModel.isConnected.collectAsStateWithLifecycle()
-    Log.i("TAG", "HomeView: $lat $lon")
     LaunchedEffect(lat,lon,isConnected) {
         viewModel.getCurrentWeather(lat, lon,isConnected)
         viewModel.getDailyWeatherForecast(lat, lon,isConnected)
@@ -74,6 +73,8 @@ fun HomeView(viewModel: HomeViewModel,lat: Double,lon:Double){
     val scrollState = rememberScrollState()
     viewModel.getCurrentTime()
     viewModel.getCurrentDate()
+
+    Log.i("TAG", "HomeView: ${weatherStatus.value}")
 
     Column(modifier = Modifier
         .fillMaxSize()

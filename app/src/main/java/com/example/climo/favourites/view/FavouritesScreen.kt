@@ -1,5 +1,9 @@
 package com.example.climo.favourites.view
 
+import android.app.AlertDialog
+import android.content.Intent
+import android.net.Uri
+import android.provider.Settings
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -138,13 +142,15 @@ private fun FavouritesList(favourites: List<Favourites>,viewModel: FavouritesVie
 
 @Composable
 private fun FavouriteItem(favourite: Favourites, action:()->Unit, nav : (lat:Double,lon:Double)->Unit){
+    val context = LocalContext.current
     Card(
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.elevatedCardColors(
             containerColor = colorResource(R.color.dark_blue)),
         modifier = Modifier
             .width(350.dp)
-            .height(80.dp).clickable(onClick = {nav(favourite.latitude,favourite.longitude)})){
+            .height(80.dp)
+            .clickable(onClick = { nav(favourite.latitude, favourite.longitude) })){
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxSize()){
             Text(text=favourite.address,
                 fontSize = 22.sp,
@@ -160,8 +166,17 @@ private fun FavouriteItem(favourite: Favourites, action:()->Unit, nav : (lat:Dou
                 contentDescription = stringResource(R.string.bin_icon),
                 modifier = Modifier
                     .size(50.dp)
-                    .padding(start = 5.dp,end = 20.dp)
-                    .clickable(onClick = action)
+                    .padding(start = 5.dp, end = 20.dp)
+                    .clickable(onClick = {
+                        AlertDialog.Builder(context)
+                            .setTitle("Delete Item")
+                            .setMessage("Are you sure you want to delete this item?")
+                            .setPositiveButton("Delete") { _, _ ->
+                                 action()
+                            }
+                            .setNegativeButton("Cancel", null)
+                            .show()
+                    })
             )
         }
     }
@@ -180,7 +195,9 @@ private fun MapAnimation(){
     )
 
     Column(
-        modifier = Modifier.fillMaxSize().padding(top=150.dp),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(top = 150.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         LottieAnimation(

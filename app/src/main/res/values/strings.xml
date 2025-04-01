@@ -45,4 +45,9 @@
     <string name="c">°C</string>
     <string name="add_to_favourites">Add to favourites</string>
     <string name="API_KEY">AIzaSyDM-junsji3WW5ASGT1zIirl4kQrMhjKvA</string>
+    <string name="start_time">From Time</string>
+    <string name="to_time">To Time</string>
+    <string name="cancel">Cancel</string>
+    <string name="save">Save</string>
+    <string name="set_your_alert">Set Your Alert!</string>
 </resources>

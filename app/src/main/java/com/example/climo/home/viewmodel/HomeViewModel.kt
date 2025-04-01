@@ -110,14 +110,14 @@ class HomeViewModel(private val repo:Repository,private val connectivityListener
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 repo.getCurrentWeather(lat,lon)
-                    .catch { weatherDetails.value = Response.Failure(Throwable("Error getting data")) }
+                    .catch { weatherDetails.value = Response.Failure(Throwable(it.message)) }
                     .collect{
                         weatherDetails.value = Response.Success(it)
                         storeCurrentWeather(lat,lon,it)
                     }
                 Log.i("TAG", "${weatherDetails.value}: ")
             }catch (ex:Exception){
-                weatherDetails.value = Response.Failure(Throwable("Error calling the api"))
+                weatherDetails.value = Response.Failure(Throwable(ex.cause))
 
             }
         }
@@ -167,7 +167,6 @@ class HomeViewModel(private val repo:Repository,private val connectivityListener
             val weatherStatus = WeatherStatus(lat,lon,currentWeather)
             try {
                 repo.insertWeatherStatus(weatherStatus)
-                Log.i("TAG", "storeCurrentWeather: ")
 
             }catch (ex:Exception){
                 Log.i("TAG", "${ex.message} ")
