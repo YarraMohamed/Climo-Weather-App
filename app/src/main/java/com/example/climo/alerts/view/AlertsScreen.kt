@@ -1,6 +1,16 @@
 package com.example.climo.alerts.view
 
+import android.Manifest
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
+import android.os.Build
+import android.provider.Settings
 import android.widget.Toast
+import androidx.activity.compose.LocalActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContract
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -52,6 +62,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.core.app.ActivityCompat.shouldShowRequestPermissionRationale
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
@@ -75,6 +87,7 @@ import java.util.Locale
 @Composable
 fun AlertView(viewModel: AlertsViewModel,address:String) {
     val context = LocalContext.current
+    val activity = LocalActivity.current
     var alertsList = viewModel.alerts.collectAsStateWithLifecycle()
     var messageState = viewModel.message.collectAsStateWithLifecycle()
     val snackBarHostState = remember { SnackbarHostState() }
@@ -83,6 +96,47 @@ fun AlertView(viewModel: AlertsViewModel,address:String) {
     var toTime by remember { mutableStateOf("Select Time") }
     var date by remember { mutableStateOf("Select date") }
     var errorMessage by remember { mutableStateOf("") }
+
+    var hasNotificationPermission by remember {
+        mutableStateOf(
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+
+                ContextCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) == PackageManager.PERMISSION_GRANTED
+            } else true
+        )
+    }
+
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission(),
+        onResult = { isGranted ->
+            hasNotificationPermission = isGranted
+            if (!isGranted) {
+                val rationale = shouldShowRequestPermissionRationale(
+                    activity!!,
+                    Manifest.permission.POST_NOTIFICATIONS
+                )
+                if (rationale) {
+                    android.app.AlertDialog.Builder(context)
+                        .setTitle("Permission Required")
+                        .setMessage("Notification permission is necessary. Please enable it in settings.")
+                        .setPositiveButton("Go to Settings") { _, _ ->
+                            val intent =
+                                Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                                    data = Uri.fromParts("package", context.packageName, null)
+                                }
+                            context.startActivity(intent)
+                        }
+                        .setNegativeButton("Cancel", null)
+                        .show()
+                }
+            }
+
+        }
+
+    )
 
 
     LaunchedEffect(messageState.value) {
@@ -105,7 +159,10 @@ fun AlertView(viewModel: AlertsViewModel,address:String) {
                 snackbarHost = { SnackbarHost(snackBarHostState) },
                 floatingActionButton = {
                     FloatingActionButton(
-                        onClick = { openDialog.value = true },
+                        onClick = {
+                            permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                            openDialog.value = true
+                        },
                         containerColor = colorResource(R.color.white),
                         modifier = Modifier.padding(16.dp)
                     ) {
