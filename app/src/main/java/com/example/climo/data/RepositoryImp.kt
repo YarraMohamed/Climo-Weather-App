@@ -107,7 +107,6 @@ class RepositoryImp private constructor (
     }
 
     override suspend fun deleteAlert(alert: Alerts) {
-        Log.i("Worker", "deleteAlert: ")
        return alertsLocalDataSourceImp.deleteAlert(alert)
     }
 
@@ -133,14 +132,15 @@ class RepositoryImp private constructor (
             .setInputData(inputData)
             .setInitialDelay(delay,TimeUnit.MILLISECONDS)
             .setConstraints(constraints)
-            .addTag("WorkManager ${alert.id}")
+            .addTag("WorkManager ${alert.date} between ${alert.startTime} and ${alert.endTime}")
             .build()
 
         worker.enqueue(request)
     }
 
     override suspend fun cancelAlert(alert: Alerts) {
-        worker.cancelAllWorkByTag("WorkManager ${alert.id}")
+        Log.i("Worker", "cancelAlert: ")
+        worker.cancelAllWorkByTag("WorkManager ${alert.date} between ${alert.startTime} and ${alert.endTime}")
     }
 
     companion object {

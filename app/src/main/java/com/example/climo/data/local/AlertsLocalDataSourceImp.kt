@@ -16,7 +16,6 @@ class AlertsLocalDataSourceImp(private val alertsDAO: AlertsDAO) : AlertsLocalDa
     }
 
     override suspend fun deleteAlert(alert: Alerts){
-        Log.i("Worker", "deleteAlert in local: ")
         return alertsDAO.deleteAlert(alert)
     }
 }

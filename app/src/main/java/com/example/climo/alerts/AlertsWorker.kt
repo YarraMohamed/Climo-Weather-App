@@ -42,13 +42,8 @@ import java.time.LocalDateTime
 class AlertsWorker(private val context: Context , private  val workerParameters: WorkerParameters)
     : CoroutineWorker(context,workerParameters) {
 
-    private val repository: Repository = RepositoryImp.getInstance(
-        WeatherRemoteDataSourceImp(RetrofitHelper.weatherService),
-        FavouritesLocalDataSourceImp(AppDatabase.getInstance(context).getFavouritesDAO()),
-        WeatherLocalDataSourceImp(AppDatabase.getInstance(context).getWeatherDAO()),
-        AlertsLocalDataSourceImp(AppDatabase.getInstance(context).getAlertsDao()),
-        WorkManager.getInstance(context)
-    )
+    val alertsDAO = AppDatabase.getInstance(context).getAlertsDao()
+
     @RequiresApi(Build.VERSION_CODES.O)
     override suspend fun doWork(): Result {
         try{
@@ -59,6 +54,7 @@ class AlertsWorker(private val context: Context , private  val workerParameters:
             val address = alert.address
             val location = convertAddress(address)
             if(location==null){
+                alertsDAO.deleteSomeAlert(alert.startTime, alert.endTime, alert.date)
                 return Result.failure(workDataOf("Error" to "No location found"))
             } else{
                 val now = LocalDateTime.now()
@@ -70,9 +66,7 @@ class AlertsWorker(private val context: Context , private  val workerParameters:
                     val weatherStatus = apiResult.weather.get(0).description
                     Log.i("Worker", "doWork: $weatherStatus")
                     createNotification(weatherStatus)
-//                    runBlocking {
-//                        repository.deleteAlert(alert)
-//                    }
+                    alertsDAO.deleteSomeAlert(alert.startTime, alert.endTime, alert.date)
                     return Result.success(workDataOf("Status" to weatherStatus))
                 }
             }

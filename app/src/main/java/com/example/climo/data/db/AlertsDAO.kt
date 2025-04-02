@@ -16,11 +16,12 @@ interface AlertsDAO {
     fun getAlerts() : Flow<List<Alerts>>
 
     @Delete
-    suspend fun deleteAlert(alert:Alerts){
-        Log.i("Worker", "deleteAlert: in DAO ")
-    }
+    suspend fun deleteAlert(alert:Alerts)
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun addAlert(alert: Alerts)
+
+    @Query("Delete From alerts_table Where startTime=:startTime AND date=:date AND endTime=:endTime")
+    suspend fun deleteSomeAlert(startTime:String,endTime:String,date:String)
 
 }
