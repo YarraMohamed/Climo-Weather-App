@@ -1,5 +1,6 @@
 package com.example.climo.data.local
 
+import android.util.Log
 import com.example.climo.data.db.AlertsDAO
 import com.example.climo.model.Alerts
 import kotlinx.coroutines.flow.Flow
@@ -15,6 +16,7 @@ class AlertsLocalDataSourceImp(private val alertsDAO: AlertsDAO) : AlertsLocalDa
     }
 
     override suspend fun deleteAlert(alert: Alerts){
+        Log.i("Worker", "deleteAlert in local: ")
         return alertsDAO.deleteAlert(alert)
     }
 }

@@ -1,5 +1,6 @@
 package com.example.climo.data.db
 
+import android.util.Log
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
@@ -15,7 +16,9 @@ interface AlertsDAO {
     fun getAlerts() : Flow<List<Alerts>>
 
     @Delete
-    suspend fun deleteAlert(alert:Alerts)
+    suspend fun deleteAlert(alert:Alerts){
+        Log.i("Worker", "deleteAlert: in DAO ")
+    }
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun addAlert(alert: Alerts)

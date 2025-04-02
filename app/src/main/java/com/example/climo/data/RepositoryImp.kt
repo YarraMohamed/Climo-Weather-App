@@ -25,8 +25,11 @@ import com.example.climo.model.WeatherList
 import com.example.climo.model.WeatherStatus
 import com.example.climo.utilities.fromAlerts
 import com.example.climo.utilities.parseDateTime
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withContext
 import java.time.Duration
 import java.time.LocalDateTime
 import java.util.concurrent.TimeUnit
@@ -104,7 +107,8 @@ class RepositoryImp private constructor (
     }
 
     override suspend fun deleteAlert(alert: Alerts) {
-        return alertsLocalDataSourceImp.deleteAlert(alert)
+        Log.i("Worker", "deleteAlert: ")
+       return alertsLocalDataSourceImp.deleteAlert(alert)
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -133,12 +137,10 @@ class RepositoryImp private constructor (
             .build()
 
         worker.enqueue(request)
-        deleteAlert(alert)
     }
 
     override suspend fun cancelAlert(alert: Alerts) {
         worker.cancelAllWorkByTag("WorkManager ${alert.id}")
-        Log.i("Worker", "cancelAlert: canclled ")
     }
 
     companion object {
