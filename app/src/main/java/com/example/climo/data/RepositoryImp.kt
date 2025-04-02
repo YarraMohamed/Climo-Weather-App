@@ -1,11 +1,16 @@
 package com.example.climo.data
 
+import android.os.Build
+import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.work.Constraints
 import androidx.work.CoroutineWorker
+import androidx.work.Data
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
+import com.example.climo.alerts.AlertsWorker
 import com.example.climo.data.local.AlertsLocalDataSource
 import com.example.climo.data.local.FavouritesLocalDataSource
 import com.example.climo.data.local.WeatherLocalDataSource
@@ -18,8 +23,12 @@ import com.example.climo.model.Favourites
 import com.example.climo.model.HorulyDetails
 import com.example.climo.model.WeatherList
 import com.example.climo.model.WeatherStatus
+import com.example.climo.utilities.fromAlerts
+import com.example.climo.utilities.parseDateTime
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import java.time.Duration
+import java.time.LocalDateTime
 import java.util.concurrent.TimeUnit
 
 class RepositoryImp private constructor (
@@ -96,6 +105,40 @@ class RepositoryImp private constructor (
 
     override suspend fun deleteAlert(alert: Alerts) {
         return alertsLocalDataSourceImp.deleteAlert(alert)
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    override suspend fun makeAlert(alert: Alerts) {
+
+        val now = LocalDateTime.now()
+        val alertTime = parseDateTime(alert.date,alert.startTime)
+        Log.i("Worker", "makeAlert: $alertTime ")
+        val delay = Duration.between(now, alertTime).toMillis()
+        if(delay<0) return
+
+        val constraints = Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.CONNECTED)
+            .build()
+
+        val alertString = fromAlerts(alert)
+        val inputData = Data.Builder()
+            .putString("alert",alertString)
+            .build()
+
+        val request = OneTimeWorkRequestBuilder<AlertsWorker>()
+            .setInputData(inputData)
+            .setInitialDelay(delay,TimeUnit.MILLISECONDS)
+            .setConstraints(constraints)
+            .addTag("WorkManager ${alert.id}")
+            .build()
+
+        worker.enqueue(request)
+        deleteAlert(alert)
+    }
+
+    override suspend fun cancelAlert(alert: Alerts) {
+        worker.cancelAllWorkByTag("WorkManager ${alert.id}")
+        Log.i("Worker", "cancelAlert: canclled ")
     }
 
     companion object {

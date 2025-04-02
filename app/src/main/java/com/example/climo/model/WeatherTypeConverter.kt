@@ -136,4 +136,5 @@ class WeatherTypeConverter {
         val type = object : TypeToken<DailyDetails>() {}.type
         return gson.fromJson(data, type)
     }
+
 }

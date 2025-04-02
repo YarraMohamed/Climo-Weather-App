@@ -43,9 +43,10 @@ class AlertsViewModel(private val repo: Repository) : ViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 repo.addAlert(alert)
-                messageFlow.value="alert ${alert.id} is added successfully"
+                repo.makeAlert(alert)
+                messageFlow.value="alert for day ${alert.date} is added successfully"
             } catch (ex: Exception) {
-                messageFlow.value = "alert cannot be added"
+                messageFlow.value = "alert for day ${alert.date} cannot be deleted"
             }
         }
     }
@@ -54,9 +55,10 @@ class AlertsViewModel(private val repo: Repository) : ViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 repo.deleteAlert(alert)
-                messageFlow.value="alert ${alert.id} is deleted successfully"
+                repo.cancelAlert(alert)
+                messageFlow.value="alert for day ${alert.date} is deleted successfully"
             } catch (ex: Exception) {
-                messageFlow.value = "alert ${alert.id} cannot be deleted"
+                messageFlow.value = "alert for day ${alert.date} cannot be deleted"
             }
         }
     }

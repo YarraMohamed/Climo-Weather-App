@@ -173,6 +173,7 @@ private fun AlertsList(viewModel: AlertsViewModel,alerts: List<Alerts>){
 
 @Composable
 private fun AlertItem(alerts: Alerts,action:()->Unit){
+    val context = LocalContext.current
     Card(
         onClick = {},
         shape = RoundedCornerShape(16.dp),
@@ -221,7 +222,16 @@ private fun AlertItem(alerts: Alerts,action:()->Unit){
                 modifier = Modifier
                     .size(35.dp)
                     .padding(end = 10.dp)
-                    .clickable(onClick = action)
+                    .clickable(onClick = {
+                        android.app.AlertDialog.Builder(context)
+                            .setTitle("Delete Item")
+                            .setMessage("Are you sure you want to delete this item?")
+                            .setPositiveButton("Delete") { _, _ ->
+                                action()
+                            }
+                            .setNegativeButton("Cancel", null)
+                            .show()
+                    })
             )
         }
     }
