@@ -8,4 +8,5 @@ data class Alerts(
     @PrimaryKey(autoGenerate = true) var id: Int = 0,
     val address:String,
     val startTime:String,
-    val endTime:String)
+    val endTime:String,
+    val date:String= "")

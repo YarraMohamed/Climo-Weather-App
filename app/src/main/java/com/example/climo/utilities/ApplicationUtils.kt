@@ -20,6 +20,7 @@ import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
+import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
@@ -84,6 +85,11 @@ class ApplicationUtils(private val context: Context){
             } catch (e: Exception) {
                 "Error retrieving address"
             }
+        }
+
+         fun getCountryFromLocation(lat: Double,lon:Double,geocoder: Geocoder): String {
+            val location = geocoder.getFromLocation(lat, lon, 1)
+             return location?.get(0)?.countryName?: "Not Found"
         }
     }
 

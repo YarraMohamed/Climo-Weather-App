@@ -1,5 +1,11 @@
 package com.example.climo.data
 
+import androidx.work.Constraints
+import androidx.work.CoroutineWorker
+import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
 import com.example.climo.data.local.AlertsLocalDataSource
 import com.example.climo.data.local.FavouritesLocalDataSource
 import com.example.climo.data.local.WeatherLocalDataSource
@@ -14,12 +20,14 @@ import com.example.climo.model.WeatherList
 import com.example.climo.model.WeatherStatus
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import java.util.concurrent.TimeUnit
 
 class RepositoryImp private constructor (
     private val weatherRemoteDataSourceImp: WeatherRemoteDataSource,
     private val favouritesLocalDataSourceImp: FavouritesLocalDataSource,
     private val weatherLocalDataSourceImp:WeatherLocalDataSource,
-    private val alertsLocalDataSourceImp:AlertsLocalDataSource):Repository {
+    private val alertsLocalDataSourceImp:AlertsLocalDataSource,
+    private val worker: WorkManager):Repository {
 
 
     override suspend fun getCurrentWeather(lat:Double,lon:Double): Flow<CurrentWeather> {
@@ -97,10 +105,13 @@ class RepositoryImp private constructor (
             weatherRemoteDataSourceImp: WeatherRemoteDataSource,
             favouritesLocalDataSourceImp: FavouritesLocalDataSource,
             weatherLocalDataSourceImp:WeatherLocalDataSource,
-            alertsLocalDataSourceImp:AlertsLocalDataSource
+            alertsLocalDataSourceImp:AlertsLocalDataSource,
+            worker: WorkManager
         ): Repository {
             if (repository == null) {
-                return RepositoryImp(weatherRemoteDataSourceImp,favouritesLocalDataSourceImp,weatherLocalDataSourceImp,alertsLocalDataSourceImp)
+                return RepositoryImp(weatherRemoteDataSourceImp,
+                    favouritesLocalDataSourceImp,weatherLocalDataSourceImp,alertsLocalDataSourceImp,
+                    worker)
             }
             return repository
         }

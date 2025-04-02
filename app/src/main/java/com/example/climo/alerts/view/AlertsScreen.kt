@@ -25,6 +25,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DatePicker
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Scaffold
@@ -33,6 +34,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TimePicker
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -71,7 +73,7 @@ import java.util.Calendar
 import java.util.Locale
 
 @Composable
-fun AlertView(viewModel: AlertsViewModel,lat:Double,lon:Double) {
+fun AlertView(viewModel: AlertsViewModel,address:String) {
     val context = LocalContext.current
     var alertsList = viewModel.alerts.collectAsStateWithLifecycle()
     var messageState = viewModel.message.collectAsStateWithLifecycle()
@@ -79,7 +81,9 @@ fun AlertView(viewModel: AlertsViewModel,lat:Double,lon:Double) {
     val openDialog = remember { mutableStateOf(false) }
     var fromTime by remember { mutableStateOf("Select Time") }
     var toTime by remember { mutableStateOf("Select Time") }
+    var date by remember { mutableStateOf("Select date") }
     var errorMessage by remember { mutableStateOf("") }
+
 
     LaunchedEffect(messageState.value) {
         if(messageState.value.isNotBlank())
@@ -130,12 +134,15 @@ fun AlertView(viewModel: AlertsViewModel,lat:Double,lon:Double) {
             }
             if (openDialog.value) {
                 InputAlertDialog(
-                    viewModel,
+                    viewModel = viewModel,
+                    address= address,
+                    date = date,
                     fromTime = fromTime,
                     toTime = toTime,
                     errorMessage = errorMessage,
                     onDismissRequest = { openDialog.value = false },
-                    onTimeSelected = { from, to, error ->
+                    onTimeSelected = { d, from, to, error ->
+                        date = d
                         fromTime = from
                         toTime = to
                         errorMessage = error
@@ -173,15 +180,15 @@ private fun AlertItem(alerts: Alerts,action:()->Unit){
             containerColor = colorResource(R.color.dark_blue)
         ),
         modifier = Modifier
-            .width(350.dp)
+            .width(380.dp)
             .height(80.dp)){
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxSize()){
-            Text(text="From\n${alerts.startTime}",
+            Text(text="date\n${alerts.date}",
                 fontSize = 18.sp,
                 color = colorResource(R.color.white),
                 fontFamily = RobotoMedium,
                 modifier = Modifier
-                    .padding(start = 15.dp)
+                    .padding(start = 25.dp)
                     .align(Alignment.CenterVertically)
             )
             Image(
@@ -189,9 +196,9 @@ private fun AlertItem(alerts: Alerts,action:()->Unit){
                 contentDescription = stringResource(R.string.arrow_icon),
                 modifier = Modifier
                     .size(50.dp)
-                    .padding(start = 13.dp, end = 13.dp)
+                    .padding(start = 13.dp, end = 20.dp)
             )
-            Text(text="To\n${alerts.endTime}",
+            Text(text="Time\n${alerts.startTime}",
                 fontSize = 18.sp,
                 color = colorResource(R.color.white),
                 fontFamily = RobotoMedium,
@@ -204,7 +211,7 @@ private fun AlertItem(alerts: Alerts,action:()->Unit){
                 color = colorResource(R.color.white),
                 fontFamily = RobotoMedium,
                 modifier = Modifier
-                    .padding(end = 20.dp)
+                    .padding(end = 35.dp)
                     .align(Alignment.CenterVertically)
             )
 
@@ -212,7 +219,7 @@ private fun AlertItem(alerts: Alerts,action:()->Unit){
                 painter = painterResource(R.drawable.bin_icon),
                 contentDescription = stringResource(R.string.bin_icon),
                 modifier = Modifier
-                    .size(30.dp)
+                    .size(35.dp)
                     .padding(end = 10.dp)
                     .clickable(onClick = action)
             )
@@ -250,15 +257,19 @@ private fun AlertsAnimation(){
 @Composable
 private fun InputAlertDialog(
     viewModel: AlertsViewModel,
+    address: String,
+    date:String,
     fromTime: String,
     toTime: String,
     errorMessage: String,
     onDismissRequest: () -> Unit,
-    onTimeSelected: (String, String, String) -> Unit
+    onTimeSelected: (String, String, String,String) -> Unit
 ) {
     var tempFromTime by remember { mutableStateOf(fromTime) }
     var tempToTime by remember { mutableStateOf(toTime) }
+    var tempDate by remember { mutableStateOf(date) }
     var showTimePicker by remember { mutableStateOf(false) }
+    var showDatePicker by remember { mutableStateOf(false) }
     var isSelectingFromTime by remember { mutableStateOf(true) }
     var errorText by remember { mutableStateOf(errorMessage) }
 
@@ -277,6 +288,12 @@ private fun InputAlertDialog(
                 fontSize = 36.sp,
                 fontFamily = InterSemiBold
             )
+            Spacer(modifier = Modifier.height(15.dp))
+            Button(onClick = {
+                showDatePicker = true
+            },colors = ButtonDefaults.buttonColors(colorResource(R.color.white))) {
+                Text(text="date: $tempDate", color = colorResource(R.color.blue), fontSize = 14.sp, fontFamily = RobotoRegular, modifier = Modifier.width(200.dp))
+            }
             Spacer(modifier = Modifier.height(15.dp))
             Button(onClick = {
                 isSelectingFromTime = true
@@ -301,11 +318,11 @@ private fun InputAlertDialog(
                 }
                 Spacer(modifier = Modifier.width(25.dp))
                 Button(onClick = {
-                    onTimeSelected(tempFromTime, tempToTime, errorText)
+                    onTimeSelected(tempDate,tempFromTime, tempToTime, errorText)
                     if (tempFromTime == "Select Time" || tempToTime == "Select Time") {
                         errorText = "Please select valid times."
                     } else {
-                        val newAlert = Alerts(startTime = tempFromTime, endTime = tempToTime, address = "Giza")
+                        val newAlert = Alerts(date=tempDate,startTime = tempFromTime, endTime = tempToTime, address = address.split(" ")[0])
                         viewModel.addAlert(newAlert)
                         onDismissRequest()
                     }
@@ -359,6 +376,30 @@ private fun InputAlertDialog(
             }
         )
     }
+    if(showDatePicker){
+        AlertDatePickerDialog(
+            onDismissRequest = { showDatePicker = false },
+            onDateSelected = { day, month, year ->
+                val formattedDate = formatDate(day, month, year)
+                val selectedCalendar = Calendar.getInstance().apply {
+                    set(Calendar.DAY_OF_MONTH, day)
+                    set(Calendar.MONTH, month)
+                    set(Calendar.YEAR,year)
+                }
+                val currentCalendar = Calendar.getInstance()
+
+                if (selectedCalendar.before(currentCalendar)) {
+                    errorText = "Selected date is in the past. Choose a valid time."
+                    showDatePicker = false
+                    return@AlertDatePickerDialog
+                }
+
+                tempDate = formattedDate
+                showTimePicker = false
+                errorText = ""
+            }
+        )
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -391,10 +432,57 @@ fun AlertTimePickerDialog(
     }
 }
 
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AlertDatePickerDialog(
+    onDismissRequest: () -> Unit,
+    onDateSelected: (Int, Int, Int) -> Unit
+) {
+    val datePickerState = rememberDatePickerState()
+    Dialog(onDismissRequest = onDismissRequest) {
+        Card(shape = RoundedCornerShape(16.dp), modifier = Modifier.padding(16.dp)) {
+            Column(modifier = Modifier.padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+                Text("Pick a Date", fontSize = 18.sp)
+                DatePicker(state = datePickerState)
+                Spacer(modifier = Modifier.height(10.dp))
+                Row {
+                    Button(onClick = { onDismissRequest() }) {
+                        Text(text = "Cancel")
+                    }
+                    Spacer(modifier = Modifier.width(10.dp))
+                    Button(onClick = {
+                        datePickerState.selectedDateMillis?.let { millis ->
+                            val calendar = Calendar.getInstance().apply { timeInMillis = millis }
+                            onDateSelected(
+                                calendar.get(Calendar.DAY_OF_MONTH),
+                                calendar.get(Calendar.MONTH),
+                                calendar.get(Calendar.YEAR)
+                            )
+                        }
+                        onDismissRequest()
+                    }) {
+                        Text(text = "OK")
+                    }
+                }
+            }
+        }
+    }
+}
+
+
 fun formatTime(hour: Int, minute: Int): String {
     val calendar = Calendar.getInstance()
     calendar.set(Calendar.HOUR_OF_DAY, hour)
     calendar.set(Calendar.MINUTE, minute)
     return SimpleDateFormat("hh:mm a", Locale.getDefault()).format(calendar.time)
+}
+
+fun formatDate(day: Int, month: Int, year: Int): String {
+    val calendar = Calendar.getInstance()
+    calendar.set(Calendar.YEAR, year)
+    calendar.set(Calendar.MONTH, month)
+    calendar.set(Calendar.DAY_OF_MONTH, day)
+    return SimpleDateFormat("MMMM, d", Locale.getDefault()).format(calendar.time)
 }
 

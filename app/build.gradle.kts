@@ -142,4 +142,7 @@ dependencies {
     testImplementation ("androidx.arch.core:core-testing:2.2.0")
     testImplementation ("org.robolectric:robolectric:4.12")
 
+    //Work Manager
+    implementation("androidx.work:work-runtime-ktx:2.10.0")
+
 }
