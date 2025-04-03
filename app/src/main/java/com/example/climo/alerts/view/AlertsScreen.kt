@@ -231,7 +231,6 @@ private fun AlertsList(viewModel: AlertsViewModel,alerts: List<Alerts>){
 
 @Composable
 private fun AlertItem(alerts: Alerts,action:()->Unit){
-    Log.i("Worker", "AlertItem: $alerts ")
     val context = LocalContext.current
     Card(
         onClick = {},
