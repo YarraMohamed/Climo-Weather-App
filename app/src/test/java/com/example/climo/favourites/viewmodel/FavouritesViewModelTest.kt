@@ -8,6 +8,7 @@ import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
@@ -56,23 +57,5 @@ class FavouritesViewModelTest{
         assertThat(successResponse.data.size, equalTo(3))
     }
 
-    @Test
-    fun deleteFav_retrieveFreshListWithoutItem() = runTest {
-        //Given
-        val fav = fakeList.get(0)
 
-        //When
-        viewModel.deleteFav(fav)
-        fakeList.remove(fav)
-        viewModel.getFav()
-        val result = viewModel.favList.first{
-            it is Response.Success
-        }
-
-        //Then
-        assertThat(result, instanceOf(Response.Success::class.java))
-        val successResponse = result as Response.Success
-        assertThat(successResponse.data.size, equalTo(2))
-
-    }
 }

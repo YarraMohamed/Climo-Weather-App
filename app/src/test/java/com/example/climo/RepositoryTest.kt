@@ -1,5 +1,8 @@
 package com.example.climo
 
+import androidx.test.core.app.ApplicationProvider
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.work.WorkManager
 import com.example.climo.data.Repository
 import com.example.climo.data.RepositoryImp
 import com.example.climo.data.local.FakeAlertsLocalDataSource
@@ -15,7 +18,9 @@ import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
 
+@RunWith(AndroidJUnit4::class)
 class RepositoryTest {
 
     private lateinit var favouritesLocalDataSource: FakeFavouritesLocalDataSource
@@ -23,6 +28,7 @@ class RepositoryTest {
     private lateinit var weatherLocalDataSource: FakeWeatherLocalDataSource
     private lateinit var alertsLocalDataSource : FakeAlertsLocalDataSource
     private lateinit var repository: Repository
+    private lateinit var worker: WorkManager
 
    @Before
    fun setup(){
@@ -30,7 +36,8 @@ class RepositoryTest {
        weatherRemoteDataSource = FakeWeatherRemoteDataSource()
        weatherLocalDataSource = mockk(relaxed = true)
        alertsLocalDataSource = mockk(relaxed = true)
-       repository = RepositoryImp.getInstance(weatherRemoteDataSource,favouritesLocalDataSource,weatherLocalDataSource,alertsLocalDataSource)
+       worker = WorkManager.getInstance(ApplicationProvider.getApplicationContext())
+       repository = RepositoryImp.getInstance(weatherRemoteDataSource,favouritesLocalDataSource,weatherLocalDataSource,alertsLocalDataSource,worker)
    }
 
     @Test

@@ -85,9 +85,10 @@ class FavouritesLocalDataSourceTest {
     fun deleteFav_retrieveFreshListWithoutFav() = runBlocking {
         //Given
         val fav = Favourites(1,5.0,30.1,"address")
-        favouritesLocalDataSource.deleteFav(fav)
+        favouritesLocalDataSource.addFav(fav)
 
         //When
+        favouritesLocalDataSource.deleteFav(fav)
         val result = favouritesLocalDataSource.getFavouriteList().first()
 
         //Then

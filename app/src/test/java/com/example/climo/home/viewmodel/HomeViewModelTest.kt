@@ -81,16 +81,18 @@ class HomeViewModelTest{
         val lon = 32.0
 
         // When
-        advanceUntilIdle()
         viewModel.getCurrentWeather(lat, lon,true)
+        advanceUntilIdle()
         val result = viewModel.currentWeather.first{
             it is Response.Success
         }
+
 
         // Then
         assertThat(result, instanceOf(Response.Success::class.java))
         val successResponse = result as Response.Success
         assertThat(successResponse.data.clouds.all, equalTo(30))
     }
+
 
 }

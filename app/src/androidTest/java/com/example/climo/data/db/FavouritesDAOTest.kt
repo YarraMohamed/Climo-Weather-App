@@ -47,25 +47,23 @@ class FavouritesDAOTest {
         //Then
         assertThat(result.isNotEmpty(),`is`(true))
         assertThat(result.last(),`is`(fav))
-        assertThat(result.contains(fav),`is`(true))
     }
 
     @Test
-    fun deleteFavPlace_retrieveListWithoutTheItem() = runTest{
-        //Given
-        val fav = Favourites(1,31.5,32.7,"Address")
-        val anotherFav = Favourites(2,30.5,20.0,"address")
-        favouritesDAO.addFav(fav)
-        favouritesDAO.addFav(anotherFav)
+    fun deleteFavPlace_retrieveListWithoutTheItem() = runTest {
+        // Given
+        val firstFavourite = Favourites(1, 31.5, 32.7, "Address")
+        val secondFavourite = Favourites(2, 30.5, 20.0, "address")
+        favouritesDAO.addFav(firstFavourite)
+        favouritesDAO.addFav(secondFavourite)
 
-        //When
-        favouritesDAO.deleteFavourite(fav)
+        // When
+        favouritesDAO.deleteFavourite(firstFavourite)
         val result = favouritesDAO.getFavouriteList().first()
 
-        //Then
-        assertThat(result.isNotEmpty(),`is`(true))
-        assertThat(result.first(), not(true))
-        assertThat(result.contains(fav),not(true))
-
+        // Then
+        assertThat(result.isNotEmpty(), `is`(true))
+        assertThat(result.contains(firstFavourite), not(`is`(true)))
+        assertThat(result.first(), `is`(secondFavourite))
     }
 }
