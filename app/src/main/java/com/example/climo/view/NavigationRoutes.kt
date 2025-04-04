@@ -17,4 +17,6 @@ sealed class NavigationRoutes {
     object Favourites : NavigationRoutes()
     @Serializable
     object FavMap : NavigationRoutes()
+    @Serializable
+    object Map : NavigationRoutes()
 }

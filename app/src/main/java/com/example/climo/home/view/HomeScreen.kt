@@ -98,8 +98,13 @@ fun HomeView(viewModel: HomeViewModel,lat: Double,lon:Double){
                     modifier = Modifier.padding(top=25.dp, start = 20.dp))
                 when(weatherHourlyForecastStatus.value){
                     is Response.Failure -> {
-                        ErrorAnimation()
-                        Toast.makeText(context,"Please try again",Toast.LENGTH_SHORT).show()
+                        if(!isConnected){
+                            ErrorAnimation()
+                            Toast.makeText(context,"Please try again",Toast.LENGTH_SHORT).show()
+                        }else{
+                            CircularProgressIndicator(color = colorResource(R.color.white), modifier = Modifier
+                                .align(Alignment.CenterHorizontally))
+                        }
                     }
                     Response.Loading -> {
                         CircularProgressIndicator(color = colorResource(R.color.white), modifier = Modifier
@@ -120,7 +125,12 @@ fun HomeView(viewModel: HomeViewModel,lat: Double,lon:Double){
 
                 when(weatherDailyForecastStatus.value){
                     is Response.Failure -> {
-                        ErrorAnimation()
+                        if(!isConnected){
+                            ErrorAnimation()
+                        }else{
+                            CircularProgressIndicator(color = colorResource(R.color.white), modifier = Modifier
+                                .align(Alignment.CenterHorizontally))
+                        }
                     }
                     Response.Loading -> {
                         CircularProgressIndicator(color = colorResource(R.color.white), modifier = Modifier
@@ -138,7 +148,13 @@ fun HomeView(viewModel: HomeViewModel,lat: Double,lon:Double){
                 }
             }
             is Response.Failure -> {
-                ErrorAnimation()
+                if(!isConnected){
+                    ErrorAnimation()
+                }else{
+                    CircularProgressIndicator(color = colorResource(R.color.white), modifier = Modifier
+                        .align(Alignment.CenterHorizontally))
+                }
+
             }
         }
     }

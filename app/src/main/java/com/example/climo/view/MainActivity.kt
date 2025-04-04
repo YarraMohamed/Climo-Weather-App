@@ -18,6 +18,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.lifecycleScope
 import com.example.climo.R
+import com.example.climo.settings.view.SettingsView
 import com.example.climo.utilities.ApplicationUtils
 import com.google.android.libraries.places.api.Places
 import kotlinx.coroutines.launch

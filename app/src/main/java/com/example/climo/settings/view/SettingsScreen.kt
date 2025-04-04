@@ -33,15 +33,17 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavHostController
 import com.example.climo.R
 import com.example.climo.settings.viewmodel.SettingsViewModel
+import com.example.climo.view.NavigationRoutes
 import com.example.climo.view.ui.theme.GradientBackground
 import com.example.climo.view.ui.theme.InterBold
 import com.example.climo.view.ui.theme.InterExtraBold
 import com.example.climo.view.ui.theme.RobotoRegular
 
 @Composable
-fun SettingsView(viewModel: SettingsViewModel) {
+fun SettingsView(viewModel: SettingsViewModel,navController:NavHostController) {
     Column(modifier = Modifier
         .fillMaxSize()) {
 
@@ -54,7 +56,7 @@ fun SettingsView(viewModel: SettingsViewModel) {
 
         //Cards
         LanguageCard(viewModel)
-        LocationCard()
+        LocationCard(viewModel,navController)
         TempCard(viewModel)
         WindSpeedCard(viewModel)
     }
@@ -124,8 +126,10 @@ private fun LanguageCard(viewModel: SettingsViewModel){
 
 //LocationCard
 @Composable
-private fun LocationCard(){
-    val selectedLocation = remember { mutableStateOf(R.string.gps) }
+private fun LocationCard(viewModel: SettingsViewModel,navController: NavHostController){
+    val location by viewModel.savedLocationOption.collectAsStateWithLifecycle()
+    val selectedOptions = remember { mutableStateOf(location) }
+
     //Container
     Column(modifier = Modifier
         .padding(top = 25.dp)
@@ -159,14 +163,21 @@ private fun LocationCard(){
                     .padding(start = 17.dp, top = 27.dp)) {
                     RadioButtonWithText(
                         text = stringResource(R.string.gps),
-                        isSelected = selectedLocation.value == R.string.gps,
-                        onClick = { selectedLocation.value = R.string.gps }
+                        isSelected = selectedOptions.value == "GPS",
+                        onClick = {
+                            selectedOptions.value = "GPS"
+                            viewModel.saveLocationOption("GPS")
+                        }
                     )
                     Spacer(modifier = Modifier.width(100.dp))
                     RadioButtonWithText(
                         text = stringResource(R.string.map),
-                        isSelected = selectedLocation.value == R.string.map,
-                        onClick = { selectedLocation.value = R.string.map }
+                        isSelected = selectedOptions.value == "MAP",
+                        onClick = {
+                            selectedOptions.value = "MAP"
+                            viewModel.saveLocationOption("MAP")
+                            navController.navigate(NavigationRoutes.Map)
+                        }
                     )
                 }
             }
@@ -219,6 +230,7 @@ private fun TempCard(viewModel: SettingsViewModel){
                         onClick = {
                             selectedTemp.value = ""
                             viewModel.saveTempUnit("")
+                            viewModel.saveWindSpeedUnit()
                         }
                     )
                     RadioButtonWithText(
@@ -227,6 +239,7 @@ private fun TempCard(viewModel: SettingsViewModel){
                         onClick = {
                             selectedTemp.value = "metric"
                             viewModel.saveTempUnit("metric")
+                            viewModel.saveWindSpeedUnit()
                         }
                     )
                     RadioButtonWithText(
@@ -235,6 +248,7 @@ private fun TempCard(viewModel: SettingsViewModel){
                         onClick = {
                             selectedTemp.value = "imperial"
                             viewModel.saveTempUnit("imperial")
+                            viewModel.saveWindSpeedUnit()
                         }
                     )
                 }
@@ -248,8 +262,11 @@ private fun TempCard(viewModel: SettingsViewModel){
 private fun WindSpeedCard(viewModel: SettingsViewModel){
 
     val windSpeedUnit by viewModel.windSpeed.collectAsStateWithLifecycle()
-    val selectedWindSpeed = remember { mutableStateOf(windSpeedUnit) }
-    Log.i("Settings", "WindSpeedCard: ${selectedWindSpeed.value} ")
+    val tempUnit by viewModel.tempUnit.collectAsStateWithLifecycle()
+
+    LaunchedEffect(tempUnit) {
+        viewModel.getWindSpeedUnit()
+    }
 
     //container
     Column(modifier = Modifier
@@ -284,14 +301,14 @@ private fun WindSpeedCard(viewModel: SettingsViewModel){
                     .padding(start = 17.dp, top = 27.dp)) {
                     RadioButtonWithText(
                         text = stringResource(R.string.meter_second),
-                        isSelected = selectedWindSpeed.value =="m/s",
-                        onClick = { selectedWindSpeed.value ="m/s" }
+                        isSelected = windSpeedUnit == "",
+                        onClick = { viewModel.getWindSpeedUnit() }
                     )
 //                    Spacer(modifier = Modifier.width(20.dp))
                     RadioButtonWithText(
                         text = stringResource(R.string.miles_hour),
-                        isSelected = selectedWindSpeed.value == "m/h",
-                        onClick = { selectedWindSpeed.value="m/h"}
+                        isSelected = windSpeedUnit == "m/h",
+                        onClick = {viewModel.getWindSpeedUnit()}
                     )
                 }
             }

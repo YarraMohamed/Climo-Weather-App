@@ -50,4 +50,5 @@
     <string name="cancel">Cancel</string>
     <string name="save">Save</string>
     <string name="set_your_alert">Set Your Alert!</string>
+    <string name="choose_location">Choose Location</string>
 </resources>

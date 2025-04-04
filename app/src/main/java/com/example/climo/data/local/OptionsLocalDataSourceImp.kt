@@ -1,6 +1,7 @@
 package com.example.climo.data.local
 
 import android.content.SharedPreferences
+import android.location.Location
 
 class OptionsLocalDataSourceImp(private val sharedPreferences: SharedPreferences) :
     OptionsLocalDataSource {
@@ -21,12 +22,26 @@ class OptionsLocalDataSourceImp(private val sharedPreferences: SharedPreferences
         return sharedPreferences.getString("wind_speed_unit",",ms")?:"ms"
     }
 
-    override fun saveLocation(location: String){
-        sharedPreferences.edit().putString("location",location).apply()
+    override fun saveLocation(lat:Double,lon:Double){
+        sharedPreferences.edit().putFloat("lat",lat.toFloat()).apply()
+        sharedPreferences.edit().putFloat("lon",lon.toFloat()).apply()
     }
 
-    override fun getSavedLocation():String{
-        return sharedPreferences.getString("location","")?:""
+    override fun getSavedLocation():Location{
+        val lat = sharedPreferences.getFloat("lat", 0f).toDouble()
+        val lon = sharedPreferences.getFloat("lon", 0f).toDouble()
+        return Location("").apply {
+            latitude = lat
+            longitude = lon
+        }
+    }
+
+    override fun saveLocationOption(location: String) {
+        sharedPreferences.edit().putString("locationOption",location).apply()
+    }
+
+    override fun getSavedLocationOption(): String {
+        return sharedPreferences.getString("locationOption","")?:""
     }
 
     override fun saveLanguage(language: String) {

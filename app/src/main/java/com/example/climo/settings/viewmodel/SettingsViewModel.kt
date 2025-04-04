@@ -1,10 +1,12 @@
 package com.example.climo.settings.viewmodel
 
+import android.location.Location
+import android.location.LocationManager
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.climo.data.Repository
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
@@ -21,13 +23,17 @@ class SettingsViewModel(private val repo:Repository) : ViewModel() {
     private var languageFlow = MutableStateFlow("en")
     var language = languageFlow.asStateFlow()
 
-    private var locationFlow = MutableStateFlow("")
+    private var locationOptionFlow = MutableStateFlow("GPS")
+    var savedLocationOption = locationOptionFlow.asStateFlow()
+
+    private var locationFlow = MutableStateFlow(Location(LocationManager.GPS_PROVIDER))
     var savedLocation = locationFlow.asStateFlow()
 
 
     init {
         getTempUnit()
         getLanguage()
+        getLocationOption()
         saveWindSpeedUnit()
         getWindSpeedUnit()
     }
@@ -44,13 +50,11 @@ class SettingsViewModel(private val repo:Repository) : ViewModel() {
                 }
         }
     }
-    private fun saveWindSpeedUnit(){
+    fun saveWindSpeedUnit(){
         viewModelScope.launch {
-            if(repo.getTempUnit().first()=="imperial"){
-                repo.saveWindSpeedUnit("m/h")
-            }else{
-                repo.saveWindSpeedUnit("m/s")
-            }
+            val newUnit = if (repo.getTempUnit().first() == "imperial") "m/h" else ""
+            repo.saveWindSpeedUnit(newUnit)
+            windSpeedFlow.value = newUnit
         }
     }
 
@@ -76,8 +80,21 @@ class SettingsViewModel(private val repo:Repository) : ViewModel() {
         }
     }
 
-    fun saveLocation(location:String){
-        repo.saveLocation(location)
+    fun saveLocationOption(location:String){
+        repo.saveLocationOption(location)
+    }
+
+    fun getLocationOption() {
+        viewModelScope.launch {
+            repo.getSavedLocationOption()
+                .collect {
+                    locationOptionFlow.value=it
+                }
+        }
+    }
+
+    fun saveLocation(lat:Double,lon:Double){
+        repo.saveLocation(lat,lon)
     }
 
     fun getLocation() {

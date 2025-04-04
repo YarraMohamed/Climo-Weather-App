@@ -73,6 +73,7 @@ import com.example.climo.favourites.viewmodel.FavouritesViewModel
 import com.example.climo.home.view.HomeView
 import com.example.climo.home.viewmodel.HomeViewModel
 import com.example.climo.map.viewmodel.MapViewModel
+import com.example.climo.settings.view.MapScreen
 import com.example.climo.settings.view.SettingsView
 import com.example.climo.settings.viewmodel.SettingsViewModel
 import com.example.climo.utilities.ApplicationUtils
@@ -268,7 +269,7 @@ private fun NavigationGraph(navController: NavHostController,location: Location)
                     AlertsLocalDataSourceImp(AppDatabase.getInstance(context).getAlertsDao()),
                     OptionsLocalDataSourceImp(context.getSharedPreferences("saved_units", Context.MODE_PRIVATE))))
             val settingsViewModel : SettingsViewModel = viewModel(factory = factory)
-            SettingsView(settingsViewModel)
+            SettingsView(settingsViewModel,navController)
         }
         composable<NavigationRoutes.Alerts> {
             val factory = AlertsViewModel.AlertsFactory(
@@ -307,6 +308,17 @@ private fun NavigationGraph(navController: NavHostController,location: Location)
                 Geocoder(context))
             val mapViewModel : MapViewModel = viewModel(factory=factory)
             FavMapScreen(mapViewModel)
+        }
+        composable<NavigationRoutes.Map> {
+            val factory = SettingsViewModel.SettingsFactory(
+                RepositoryImp.getInstance(
+                    WeatherRemoteDataSourceImp(RetrofitHelper.weatherService),
+                    FavouritesLocalDataSourceImp(AppDatabase.getInstance(context).getFavouritesDAO()),
+                    WeatherLocalDataSourceImp(AppDatabase.getInstance(context).getWeatherDAO()),
+                    AlertsLocalDataSourceImp(AppDatabase.getInstance(context).getAlertsDao()),
+                    OptionsLocalDataSourceImp(context.getSharedPreferences("saved_units", Context.MODE_PRIVATE))))
+            val settingsViewModel : SettingsViewModel = viewModel(factory = factory)
+            MapScreen(settingsViewModel)
         }
     }
 }

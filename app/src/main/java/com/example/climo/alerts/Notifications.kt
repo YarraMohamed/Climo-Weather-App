@@ -51,6 +51,7 @@ fun createNotification(context: Context, description: String) {
         action = "SNOOZE_NOTIFICATION"
         flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
     }
+    snoozeIntent.putExtra("description",description)
 
     val snoozePendingIntent = PendingIntent.getBroadcast(
         context, 1, snoozeIntent,  PendingIntent.FLAG_IMMUTABLE)

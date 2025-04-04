@@ -1,5 +1,6 @@
 package com.example.climo.data
 
+import android.location.Location
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
@@ -161,12 +162,20 @@ class RepositoryImp private constructor (
         return flowOf( optionsLocalDataSourceImp.getWindSpeedUnit() )
     }
 
-    override fun saveLocation(location: String) {
-        return optionsLocalDataSourceImp.saveLocation(location)
+    override fun saveLocation(lat:Double,lon:Double) {
+        return optionsLocalDataSourceImp.saveLocation(lat,lon)
     }
 
-    override fun getSavedLocation(): Flow<String> {
+    override fun getSavedLocation(): Flow<Location> {
         return flowOf(optionsLocalDataSourceImp.getSavedLocation())
+    }
+
+    override fun saveLocationOption(location: String) {
+        return optionsLocalDataSourceImp.saveLocationOption(location)
+    }
+
+    override fun getSavedLocationOption(): Flow<String> {
+        return flowOf(optionsLocalDataSourceImp.getSavedLocationOption())
     }
 
     override fun saveLanguage(language: String) {

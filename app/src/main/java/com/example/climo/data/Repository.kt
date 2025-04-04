@@ -1,5 +1,6 @@
 package com.example.climo.data
 
+import android.location.Location
 import androidx.work.WorkManager
 import com.example.climo.model.Alerts
 import com.example.climo.model.CurrentWeather
@@ -42,8 +43,10 @@ interface Repository {
     fun getTempUnit():Flow<String>
     fun saveWindSpeedUnit(windSpeedUnit:String)
     fun getWindSpeedUnit():Flow<String>
-    fun saveLocation(location: String)
-    fun getSavedLocation():Flow<String>
+    fun saveLocation(lat:Double,lon:Double)
+    fun getSavedLocation():Flow<Location>
+    fun saveLocationOption(location: String)
+    fun getSavedLocationOption():Flow<String>
     fun saveLanguage(language: String)
     fun getLanguage(): Flow<String>
 }

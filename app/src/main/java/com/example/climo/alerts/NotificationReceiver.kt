@@ -50,8 +50,9 @@ class NotificationReceiver : BroadcastReceiver() {
             "SNOOZE_NOTIFICATION" -> {
                 notificationManager.cancel(1)
                 val description = intent.getStringExtra("description") ?: "Check the weather again!"
+                Log.i("Worker", "onReceive: $description ")
                 val snoozeWorkRequest = OneTimeWorkRequestBuilder<AlertsWorker>()
-                    .setInitialDelay(2, TimeUnit.MINUTES)
+                    .setInitialDelay(1, TimeUnit.MINUTES)
                     .setInputData(workDataOf("description" to description))
                     .build()
                 WorkManager.getInstance(context).enqueue(snoozeWorkRequest)

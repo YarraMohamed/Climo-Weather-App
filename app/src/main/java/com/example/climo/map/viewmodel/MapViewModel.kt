@@ -29,7 +29,7 @@ class MapViewModel(private val repo: Repository,private val geocoder: Geocoder) 
     private var messageFlow = MutableStateFlow("")
     val message = messageFlow.asStateFlow()
 
-    private val markerPositionFlow = MutableStateFlow(LatLng(30.9971, 31.1007))
+    private val markerPositionFlow = MutableStateFlow(LatLng(30.015214, 31.178947))
     val markerPosition = markerPositionFlow.asStateFlow()
 
     private val addressFlow = MutableStateFlow("")
