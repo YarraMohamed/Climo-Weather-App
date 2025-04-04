@@ -129,6 +129,8 @@ private fun LanguageCard(viewModel: SettingsViewModel){
 private fun LocationCard(viewModel: SettingsViewModel,navController: NavHostController){
     val location by viewModel.savedLocationOption.collectAsStateWithLifecycle()
     val selectedOptions = remember { mutableStateOf(location) }
+    Log.i("loc", "LocationCard: ${location} ")
+    Log.i("loc", "LocationCard: ${selectedOptions.value} ")
 
     //Container
     Column(modifier = Modifier

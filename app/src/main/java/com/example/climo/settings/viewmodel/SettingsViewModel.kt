@@ -26,8 +26,8 @@ class SettingsViewModel(private val repo:Repository) : ViewModel() {
     private var locationOptionFlow = MutableStateFlow("GPS")
     var savedLocationOption = locationOptionFlow.asStateFlow()
 
-    private var locationFlow = MutableStateFlow(Location(LocationManager.GPS_PROVIDER))
-    var savedLocation = locationFlow.asStateFlow()
+//    private var locationFlow = MutableStateFlow(Location(LocationManager.GPS_PROVIDER))
+//    var savedLocation = locationFlow.asStateFlow()
 
 
     init {
@@ -36,6 +36,7 @@ class SettingsViewModel(private val repo:Repository) : ViewModel() {
         getLocationOption()
         saveWindSpeedUnit()
         getWindSpeedUnit()
+        saveLocationOption("GPS")
     }
 
     fun saveTempUnit(unit:String){
@@ -96,15 +97,15 @@ class SettingsViewModel(private val repo:Repository) : ViewModel() {
     fun saveLocation(lat:Double,lon:Double){
         repo.saveLocation(lat,lon)
     }
-
-    fun getLocation() {
-        viewModelScope.launch {
-            repo.getSavedLocation()
-                .collect {
-                    locationFlow.value=it
-                }
-        }
-    }
+//
+//    fun getLocation() {
+//        viewModelScope.launch {
+//            repo.getSavedLocation()
+//                .collect {
+//                    locationFlow.value=it
+//                }
+//        }
+//    }
 
     class SettingsFactory(private val repo: Repository) :ViewModelProvider.Factory{
         override fun <T : ViewModel> create(modelClass: Class<T>): T {

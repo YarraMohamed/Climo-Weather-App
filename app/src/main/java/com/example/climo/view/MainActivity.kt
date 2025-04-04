@@ -28,15 +28,13 @@ class MainActivity : ComponentActivity() {
 
     private val applicationUtils = ApplicationUtils(this@MainActivity)
     private var locationState: MutableState<Location> = mutableStateOf(Location(LocationManager.GPS_PROVIDER))
-    private var location : Location = Location(LocationManager.GPS_PROVIDER)
+//    private var location : Location = Location(LocationManager.GPS_PROVIDER)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if(!applicationUtils.isLocationEnabled()) applicationUtils.enableLocationService(this)
         Places.initialize(applicationContext, getString(R.string.API_KEY))
         setContent {
-            location = locationState.value
-            Log.i("TAG", "location $location ")
-            ClimoApp(location)
+            ClimoApp(locationState.value)
         }
     }
     override fun onStart() {
