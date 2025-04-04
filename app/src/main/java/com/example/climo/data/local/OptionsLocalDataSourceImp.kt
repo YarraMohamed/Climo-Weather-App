@@ -41,7 +41,7 @@ class OptionsLocalDataSourceImp(private val sharedPreferences: SharedPreferences
     }
 
     override fun getSavedLocationOption(): String {
-        return sharedPreferences.getString("locationOption","")?:"GPS"
+        return sharedPreferences.getString("locationOption","GPS")?:"GPS"
     }
 
     override fun saveLanguage(language: String) {

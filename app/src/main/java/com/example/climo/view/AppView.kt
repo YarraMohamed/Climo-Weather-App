@@ -34,7 +34,10 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -85,7 +88,29 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ClimoApp(location: Location) {
-    Log.i("TAG", "ClimoApp111: $location")
+
+    val context = LocalContext.current
+    val prefs = context.getSharedPreferences("saved_units",Context.MODE_PRIVATE)
+    val locationOptions = prefs.getString("locationOption","GPS")
+    val lat = prefs.getFloat("lat",0f).toDouble()
+    val lon = prefs.getFloat("lon",0f).toDouble()
+    val actualLocation = remember { mutableStateOf(location) }
+    val loc = remember { mutableStateOf(Location("").apply {
+        latitude = prefs.getFloat("lat",0f).toDouble()
+        longitude = prefs.getFloat("lon",0f).toDouble()
+    }) }
+
+    LaunchedEffect(locationOptions,location,actualLocation,lat,lon) {
+        if (locationOptions == "MAP") {
+            loc.value = Location("").apply {
+                latitude = lat
+                longitude = lon
+            }
+            actualLocation.value = loc.value
+        }else{
+            actualLocation.value = location
+        }
+    }
 
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
@@ -126,7 +151,7 @@ fun ClimoApp(location: Location) {
                     .background(GradientBackground)
                     .padding(paddingValues)
             ) {
-                NavigationGraph(navController,location)
+                NavigationGraph(navController,actualLocation.value)
             }
         }
     }

@@ -26,8 +26,6 @@ class SettingsViewModel(private val repo:Repository) : ViewModel() {
     private var locationOptionFlow = MutableStateFlow("GPS")
     var savedLocationOption = locationOptionFlow.asStateFlow()
 
-//    private var locationFlow = MutableStateFlow(Location(LocationManager.GPS_PROVIDER))
-//    var savedLocation = locationFlow.asStateFlow()
 
 
     init {
@@ -36,7 +34,6 @@ class SettingsViewModel(private val repo:Repository) : ViewModel() {
         getLocationOption()
         saveWindSpeedUnit()
         getWindSpeedUnit()
-        saveLocationOption("GPS")
     }
 
     fun saveTempUnit(unit:String){
