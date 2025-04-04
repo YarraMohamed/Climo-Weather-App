@@ -1,5 +1,6 @@
 package com.example.climo.settings.view
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -18,6 +19,8 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -29,15 +32,16 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.climo.R
+import com.example.climo.settings.viewmodel.SettingsViewModel
 import com.example.climo.view.ui.theme.GradientBackground
 import com.example.climo.view.ui.theme.InterBold
 import com.example.climo.view.ui.theme.InterExtraBold
 import com.example.climo.view.ui.theme.RobotoRegular
 
-@Preview(showSystemUi = true)
 @Composable
-fun SettingsView() {
+fun SettingsView(viewModel: SettingsViewModel) {
     Column(modifier = Modifier
         .fillMaxSize()) {
 
@@ -49,17 +53,19 @@ fun SettingsView() {
             modifier = Modifier.padding(start = 20.dp))
 
         //Cards
-        LanguageCard()
+        LanguageCard(viewModel)
         LocationCard()
-        TempCard()
-        WindSpeedCard()
+        TempCard(viewModel)
+        WindSpeedCard(viewModel)
     }
 }
 
 //LanguageCard
 @Composable
-private fun LanguageCard(){
-    val selectedLanguage = remember { mutableStateOf(R.string.english) }
+private fun LanguageCard(viewModel: SettingsViewModel){
+    val language by viewModel.language.collectAsStateWithLifecycle()
+    val selectedLanguage = remember { mutableStateOf(language) }
+
     //Container
     Column(modifier = Modifier
         .padding(top = 25.dp)
@@ -88,19 +94,27 @@ private fun LanguageCard(){
                     )
                 }
                 //Row for Radio Buttons
-                Row(modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 27.dp, start = 17.dp)){
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 27.dp, start = 17.dp)
+                ) {
                     RadioButtonWithText(
                         text = stringResource(R.string.english),
-                        isSelected = selectedLanguage.value == R.string.english,
-                        onClick = { selectedLanguage.value = R.string.english }
+                        isSelected = selectedLanguage.value == "en",
+                        onClick = {
+                            selectedLanguage.value = "en"
+                            viewModel.saveLanguage("en")
+                        }
                     )
                     Spacer(modifier = Modifier.width(70.dp))
                     RadioButtonWithText(
                         text = stringResource(R.string.arabic),
-                        isSelected = selectedLanguage.value == R.string.arabic,
-                        onClick = { selectedLanguage.value = R.string.arabic }
+                        isSelected = selectedLanguage.value == "ar",
+                        onClick = {
+                            selectedLanguage.value = "ar"
+                            viewModel.saveLanguage("ar")
+                        }
                     )
                 }
             }
@@ -162,8 +176,10 @@ private fun LocationCard(){
 
 //TempCard
 @Composable
-private fun TempCard(){
-    val selectedTemp = remember { mutableStateOf(R.string.kelvin) }
+private fun TempCard(viewModel: SettingsViewModel){
+    val temp by viewModel.tempUnit.collectAsStateWithLifecycle()
+    val selectedTemp = remember { mutableStateOf(temp) }
+    Log.i("Settings", "TempCard: ${selectedTemp.value} ")
     //container
     Column(modifier = Modifier
         .padding(top = 25.dp)
@@ -192,25 +208,34 @@ private fun TempCard(){
                     )
                 }
                 //row for radio buttons
-                Row(modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 27.dp)){
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 27.dp)
+                ) {
                     RadioButtonWithText(
                         text = stringResource(R.string.kelvin),
-                        isSelected = selectedTemp.value == R.string.kelvin,
-                        onClick = { selectedTemp.value=R.string.kelvin }
+                        isSelected = selectedTemp.value == "",
+                        onClick = {
+                            selectedTemp.value = ""
+                            viewModel.saveTempUnit("")
+                        }
                     )
-//                    Spacer(modifier = Modifier.width(2.dp))
                     RadioButtonWithText(
                         text = stringResource(R.string.celsius),
-                        isSelected = selectedTemp.value == R.string.celsius,
-                        onClick = { selectedTemp.value=R.string.celsius }
+                        isSelected = selectedTemp.value == "metric",
+                        onClick = {
+                            selectedTemp.value = "metric"
+                            viewModel.saveTempUnit("metric")
+                        }
                     )
-//                    Spacer(modifier = Modifier.width(2.dp))
                     RadioButtonWithText(
                         text = stringResource(R.string.fahrenheit),
-                        isSelected = selectedTemp.value == R.string.fahrenheit,
-                        onClick = { selectedTemp.value=R.string.fahrenheit }
+                        isSelected = selectedTemp.value == "imperial",
+                        onClick = {
+                            selectedTemp.value = "imperial"
+                            viewModel.saveTempUnit("imperial")
+                        }
                     )
                 }
             }
@@ -220,8 +245,12 @@ private fun TempCard(){
 
 //wind speed card
 @Composable
-private fun WindSpeedCard(){
-    val selectedWindSpeed = remember { mutableStateOf(R.string.meter_second) }
+private fun WindSpeedCard(viewModel: SettingsViewModel){
+
+    val windSpeedUnit by viewModel.windSpeed.collectAsStateWithLifecycle()
+    val selectedWindSpeed = remember { mutableStateOf(windSpeedUnit) }
+    Log.i("Settings", "WindSpeedCard: ${selectedWindSpeed.value} ")
+
     //container
     Column(modifier = Modifier
         .padding(top = 15.dp)
@@ -255,14 +284,14 @@ private fun WindSpeedCard(){
                     .padding(start = 17.dp, top = 27.dp)) {
                     RadioButtonWithText(
                         text = stringResource(R.string.meter_second),
-                        isSelected = selectedWindSpeed.value == R.string.meter_second,
-                        onClick = {selectedWindSpeed.value=R.string.meter_second}
+                        isSelected = selectedWindSpeed.value =="m/s",
+                        onClick = { selectedWindSpeed.value ="m/s" }
                     )
 //                    Spacer(modifier = Modifier.width(20.dp))
                     RadioButtonWithText(
                         text = stringResource(R.string.miles_hour),
-                        isSelected = selectedWindSpeed.value == R.string.miles_hour,
-                        onClick = {selectedWindSpeed.value=R.string.miles_hour}
+                        isSelected = selectedWindSpeed.value == "m/h",
+                        onClick = { selectedWindSpeed.value="m/h"}
                     )
                 }
             }

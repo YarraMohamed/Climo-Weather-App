@@ -7,6 +7,7 @@ import com.example.climo.data.Repository
 import com.example.climo.data.RepositoryImp
 import com.example.climo.data.local.FakeAlertsLocalDataSource
 import com.example.climo.data.local.FakeFavouritesLocalDataSource
+import com.example.climo.data.local.FakeOptionsLocalDataSource
 import com.example.climo.data.local.FakeWeatherLocalDataSource
 import com.example.climo.data.remote.FakeWeatherRemoteDataSource
 import com.example.climo.model.Favourites
@@ -27,8 +28,8 @@ class RepositoryTest {
     private lateinit var weatherRemoteDataSource: FakeWeatherRemoteDataSource
     private lateinit var weatherLocalDataSource: FakeWeatherLocalDataSource
     private lateinit var alertsLocalDataSource : FakeAlertsLocalDataSource
+    private lateinit var optionsLocalDataSource: FakeOptionsLocalDataSource
     private lateinit var repository: Repository
-    private lateinit var worker: WorkManager
 
    @Before
    fun setup(){
@@ -36,8 +37,8 @@ class RepositoryTest {
        weatherRemoteDataSource = FakeWeatherRemoteDataSource()
        weatherLocalDataSource = mockk(relaxed = true)
        alertsLocalDataSource = mockk(relaxed = true)
-       worker = WorkManager.getInstance(ApplicationProvider.getApplicationContext())
-       repository = RepositoryImp.getInstance(weatherRemoteDataSource,favouritesLocalDataSource,weatherLocalDataSource,alertsLocalDataSource,worker)
+       optionsLocalDataSource = mockk(relaxed = true)
+       repository = RepositoryImp.getInstance(weatherRemoteDataSource,favouritesLocalDataSource,weatherLocalDataSource,alertsLocalDataSource,optionsLocalDataSource)
    }
 
     @Test
@@ -76,7 +77,7 @@ class RepositoryTest {
         val lon = 32.5
 
         //When
-        val result = repository.getCurrentWeather(lat,lon).first()
+        val result = repository.getCurrentWeather(lat,lon,"metric").first()
 
         //Then
         assertThat(result.clouds.all,`is`(30))
@@ -91,7 +92,7 @@ class RepositoryTest {
         val lon = 32.5
 
         //When
-        val result = repository.getCurrentForecast(lat,lon).first()
+        val result = repository.getCurrentForecast(lat,lon,"metric ").first()
 
         //Then
         assertThat(result.list.isNotEmpty(),`is`(true))

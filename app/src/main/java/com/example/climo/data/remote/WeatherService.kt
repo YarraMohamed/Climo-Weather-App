@@ -12,7 +12,7 @@ interface WeatherService {
         @Query("lat") lat:Double,
         @Query("lon") lon:Double,
         @Query("appid") appid:String = API_KEY,
-        @Query("units") units:String = "metric"
+        @Query("units") units:String=""
     ) : CurrentWeather
 
     @GET("data/2.5/forecast")
@@ -20,6 +20,6 @@ interface WeatherService {
         @Query("lat") lat:Double,
         @Query("lon") lon:Double,
         @Query("appid") appid:String = API_KEY,
-        @Query("units") units:String = "metric"
+        @Query("units") units:String=""
     ) : WeatherList
 }

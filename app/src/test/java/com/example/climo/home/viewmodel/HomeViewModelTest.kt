@@ -62,9 +62,12 @@ class HomeViewModelTest{
         repository = mockk()
 
         coEvery {
-            repository.getCurrentWeather(31.0,32.0)
+            repository.getCurrentWeather(31.0,32.0,"metric")
         }returns flowOf(fakeCurrentWeather)
 
+        coEvery {
+            repository.getTempUnit()
+        }returns flowOf("metric")
         viewModel = HomeViewModel(repository, ConnectivityListener(ApplicationProvider.getApplicationContext()))
     }
 

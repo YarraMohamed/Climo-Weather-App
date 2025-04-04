@@ -1,5 +1,6 @@
 package com.example.climo.data
 
+import androidx.work.WorkManager
 import com.example.climo.model.Alerts
 import com.example.climo.model.CurrentWeather
 import com.example.climo.model.DailyDetails
@@ -11,8 +12,8 @@ import com.example.climo.model.WeatherStatus
 import kotlinx.coroutines.flow.Flow
 
 interface Repository {
-    suspend fun getCurrentWeather(lat:Double,lon:Double) : Flow<CurrentWeather>
-    suspend fun getCurrentForecast(lat:Double,lon:Double) : Flow<WeatherList>
+    suspend fun getCurrentWeather(lat:Double,lon:Double,unit:String) : Flow<CurrentWeather>
+    suspend fun getCurrentForecast(lat:Double,lon:Double,unit: String) : Flow<WeatherList>
 
     suspend fun getFavourites() : Flow<List<Favourites>>
     suspend fun addFavourite(favourite: Favourites)
@@ -34,6 +35,15 @@ interface Repository {
     suspend fun addAlert(alert:Alerts)
     suspend fun deleteAlert(alert: Alerts)
 
-    suspend fun makeAlert(alert: Alerts)
-    suspend fun cancelAlert(alert: Alerts)
+    suspend fun makeAlert(worker: WorkManager, alert: Alerts)
+    suspend fun cancelAlert(worker: WorkManager,alert: Alerts)
+
+    fun saveTempUnit(tempUnit:String)
+    fun getTempUnit():Flow<String>
+    fun saveWindSpeedUnit(windSpeedUnit:String)
+    fun getWindSpeedUnit():Flow<String>
+    fun saveLocation(location: String)
+    fun getSavedLocation():Flow<String>
+    fun saveLanguage(language: String)
+    fun getLanguage(): Flow<String>
 }

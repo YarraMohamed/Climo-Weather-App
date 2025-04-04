@@ -13,6 +13,7 @@ import androidx.work.WorkManager
 import com.example.climo.alerts.AlertsWorker
 import com.example.climo.data.local.AlertsLocalDataSource
 import com.example.climo.data.local.FavouritesLocalDataSource
+import com.example.climo.data.local.OptionsLocalDataSource
 import com.example.climo.data.local.WeatherLocalDataSource
 import com.example.climo.data.remote.WeatherRemoteDataSource
 import com.example.climo.model.Alerts
@@ -28,6 +29,7 @@ import com.example.climo.utilities.parseDateTime
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import java.time.Duration
@@ -39,15 +41,15 @@ class RepositoryImp private constructor (
     private val favouritesLocalDataSourceImp: FavouritesLocalDataSource,
     private val weatherLocalDataSourceImp:WeatherLocalDataSource,
     private val alertsLocalDataSourceImp:AlertsLocalDataSource,
-    private val worker: WorkManager):Repository {
+    private val optionsLocalDataSourceImp: OptionsLocalDataSource):Repository {
 
 
-    override suspend fun getCurrentWeather(lat:Double,lon:Double): Flow<CurrentWeather> {
-        return weatherRemoteDataSourceImp.getCurrentWeather(lat,lon)
+    override suspend fun getCurrentWeather(lat:Double,lon:Double,unit:String): Flow<CurrentWeather> {
+        return weatherRemoteDataSourceImp.getCurrentWeather(lat,lon,unit)
     }
 
-    override suspend fun getCurrentForecast(lat: Double, lon: Double): Flow<WeatherList> {
-        return weatherRemoteDataSourceImp.getCurrentWeatherForecast(lat,lon)
+    override suspend fun getCurrentForecast(lat: Double, lon: Double,unit: String): Flow<WeatherList> {
+        return weatherRemoteDataSourceImp.getCurrentWeatherForecast(lat,lon,unit)
     }
 
     override suspend fun getFavourites(): Flow<List<Favourites>> {
@@ -111,7 +113,7 @@ class RepositoryImp private constructor (
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    override suspend fun makeAlert(alert: Alerts) {
+    override suspend fun makeAlert(worker: WorkManager,alert: Alerts) {
 
         val now = LocalDateTime.now()
         val alertTime = parseDateTime(alert.date,alert.startTime)
@@ -138,10 +140,43 @@ class RepositoryImp private constructor (
         worker.enqueue(request)
     }
 
-    override suspend fun cancelAlert(alert: Alerts) {
+    override suspend fun cancelAlert(worker: WorkManager,alert: Alerts) {
         Log.i("Worker", "cancelAlert: ")
         worker.cancelAllWorkByTag("WorkManager ${alert.date} between ${alert.startTime} and ${alert.endTime}")
     }
+
+    override fun saveTempUnit(tempUnit: String) {
+        return optionsLocalDataSourceImp.saveTempUnit(tempUnit)
+    }
+
+    override fun getTempUnit(): Flow<String> {
+       return flowOf( optionsLocalDataSourceImp.getTempUnit() )
+    }
+
+    override fun saveWindSpeedUnit(windSpeedUnit: String) {
+        return optionsLocalDataSourceImp.saveWindSpeedUnit(windSpeedUnit)
+    }
+
+    override fun getWindSpeedUnit(): Flow<String> {
+        return flowOf( optionsLocalDataSourceImp.getWindSpeedUnit() )
+    }
+
+    override fun saveLocation(location: String) {
+        return optionsLocalDataSourceImp.saveLocation(location)
+    }
+
+    override fun getSavedLocation(): Flow<String> {
+        return flowOf(optionsLocalDataSourceImp.getSavedLocation())
+    }
+
+    override fun saveLanguage(language: String) {
+        return optionsLocalDataSourceImp.saveLanguage(language)
+    }
+
+    override fun getLanguage(): Flow<String> {
+        return flowOf( optionsLocalDataSourceImp.getLanguage())
+    }
+
 
     companion object {
         private val repository: Repository? = null
@@ -151,12 +186,12 @@ class RepositoryImp private constructor (
             favouritesLocalDataSourceImp: FavouritesLocalDataSource,
             weatherLocalDataSourceImp:WeatherLocalDataSource,
             alertsLocalDataSourceImp:AlertsLocalDataSource,
-            worker: WorkManager
+            optionsLocalDataSourceImp: OptionsLocalDataSource
         ): Repository {
             if (repository == null) {
                 return RepositoryImp(weatherRemoteDataSourceImp,
                     favouritesLocalDataSourceImp,weatherLocalDataSourceImp,alertsLocalDataSourceImp,
-                    worker)
+                    optionsLocalDataSourceImp)
             }
             return repository
         }

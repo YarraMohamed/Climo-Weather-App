@@ -42,7 +42,7 @@
     <string name="daily_forecast">Daily Forecast</string>
     <string name="nav_photo">Nav_photo</string>
     <string name="home">Home</string>
-    <string name="c">°C</string>
+    <string name="c">°</string>
     <string name="add_to_favourites">Add to favourites</string>
     <string name="API_KEY">AIzaSyDM-junsji3WW5ASGT1zIirl4kQrMhjKvA</string>
     <string name="start_time">From Time</string>

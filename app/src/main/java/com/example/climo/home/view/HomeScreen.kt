@@ -98,9 +98,8 @@ fun HomeView(viewModel: HomeViewModel,lat: Double,lon:Double){
                     modifier = Modifier.padding(top=25.dp, start = 20.dp))
                 when(weatherHourlyForecastStatus.value){
                     is Response.Failure -> {
-                        if(!isConnected){
-                            ErrorAnimation()
-                        }
+                        ErrorAnimation()
+                        Toast.makeText(context,"Please try again",Toast.LENGTH_SHORT).show()
                     }
                     Response.Loading -> {
                         CircularProgressIndicator(color = colorResource(R.color.white), modifier = Modifier
@@ -121,9 +120,7 @@ fun HomeView(viewModel: HomeViewModel,lat: Double,lon:Double){
 
                 when(weatherDailyForecastStatus.value){
                     is Response.Failure -> {
-                        if(!isConnected){
-                            ErrorAnimation()
-                        }
+                        ErrorAnimation()
                     }
                     Response.Loading -> {
                         CircularProgressIndicator(color = colorResource(R.color.white), modifier = Modifier
@@ -141,9 +138,7 @@ fun HomeView(viewModel: HomeViewModel,lat: Double,lon:Double){
                 }
             }
             is Response.Failure -> {
-                if(!isConnected){
-                    ErrorAnimation()
-                }
+                ErrorAnimation()
             }
         }
     }
@@ -201,7 +196,7 @@ private fun WeatherDetails(currentWeather: CurrentWeather,address:String,time:St
                     Text(
                         text = stringResource(R.string.c),
                         color = colorResource(R.color.white),
-                        fontSize = 20.sp,
+                        fontSize = 32.sp,
                         fontFamily = InterMedium,
                     )
                 }
@@ -337,7 +332,7 @@ private fun WeatherConditions(currentWeather: CurrentWeather) {
                         fontSize = 16.sp,
                         fontFamily = InterMedium
                     )
-                    Text(text = "${currentWeather.wind.speed} m/s",
+                    Text(text = "${currentWeather.wind.speed} m",
                         color = colorResource(R.color.black),
                         fontSize = 12.sp,
                         fontFamily = RobotoRegular
@@ -470,7 +465,7 @@ private fun DailyForecastDetails(details: Deatils){
             Text(
                 text = stringResource(R.string.c),
                 color = colorResource(R.color.white),
-                fontSize = 12.sp,
+                fontSize = 16.sp,
                 fontFamily = InterMedium,
             )
         }

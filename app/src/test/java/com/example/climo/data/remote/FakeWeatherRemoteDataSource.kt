@@ -54,11 +54,12 @@ class FakeWeatherRemoteDataSource():
         )
     )
 
-    override suspend fun getCurrentWeather(lat: Double, lon: Double): Flow<CurrentWeather> {
+    override suspend fun getCurrentWeather(lat: Double, lon: Double,unit:String): Flow<CurrentWeather> {
         return flowOf(fakeCurrentWeather)
     }
 
-    override suspend fun getCurrentWeatherForecast(lat: Double, lon: Double): Flow<WeatherList> {
+    override suspend fun getCurrentWeatherForecast(lat: Double, lon: Double,unit:String): Flow<WeatherList> {
         return flowOf(fakeWeatherForecast)
     }
+
 }

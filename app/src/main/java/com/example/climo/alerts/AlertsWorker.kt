@@ -70,7 +70,8 @@ class AlertsWorker(private val context: Context , private  val workerParameters:
                     } else {
                         val apiResult = RetrofitHelper.weatherService.getCurrentWeatherDetails(
                             location.latitude,
-                            location.longitude
+                            location.longitude,
+                            units = ""
                         )
                         val weatherStatus = apiResult.weather.get(0).description
                         Log.i("Worker", "doWork: $weatherStatus")

@@ -3,6 +3,8 @@ package com.example.climo.alerts.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import androidx.work.WorkManager
+import com.example.climo.alerts.AlertsWorker
 import com.example.climo.data.Repository
 import com.example.climo.favourites.viewmodel.FavouritesViewModel
 import com.example.climo.model.Alerts
@@ -13,7 +15,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 
-class AlertsViewModel(private val repo: Repository) : ViewModel() {
+class AlertsViewModel(private val repo: Repository,private val worker: WorkManager) : ViewModel() {
     private var alertsFlow: MutableStateFlow<Response<List<Alerts>>> =
         MutableStateFlow(Response.Loading)
     var alerts = alertsFlow.asStateFlow()
@@ -43,7 +45,7 @@ class AlertsViewModel(private val repo: Repository) : ViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 repo.addAlert(alert)
-                repo.makeAlert(alert)
+                repo.makeAlert(worker,alert)
                 messageFlow.value="alert for day ${alert.date} is added successfully"
             } catch (ex: Exception) {
                 messageFlow.value = "alert for day ${alert.date} cannot be deleted"
@@ -55,7 +57,7 @@ class AlertsViewModel(private val repo: Repository) : ViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 repo.deleteAlert(alert)
-                repo.cancelAlert(alert)
+                repo.cancelAlert(worker,alert)
                 messageFlow.value="alert for day ${alert.date} is deleted successfully"
             } catch (ex: Exception) {
                 messageFlow.value = "alert for day ${alert.date} cannot be deleted"
@@ -63,9 +65,9 @@ class AlertsViewModel(private val repo: Repository) : ViewModel() {
         }
     }
 
-    class AlertsFactory(private val repo: Repository) : ViewModelProvider.Factory{
+    class AlertsFactory(private val repo: Repository, private val worker: WorkManager) : ViewModelProvider.Factory{
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            return AlertsViewModel(repo) as T
+            return AlertsViewModel(repo,worker) as T
         }
     }
 }

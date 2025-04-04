@@ -25,9 +25,11 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.take
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 
 class HomeViewModel(private val repo:Repository,private val connectivityListener: ConnectivityListener) : ViewModel(){
@@ -109,7 +111,8 @@ class HomeViewModel(private val repo:Repository,private val connectivityListener
     fun getRemoteCurrentWeather(lat:Double,lon:Double){
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                repo.getCurrentWeather(lat,lon)
+                val unit = repo.getTempUnit().first()
+                repo.getCurrentWeather(lat,lon,unit)
                     .catch { weatherDetails.value = Response.Failure(Throwable(it.message)) }
                     .collect{
                         weatherDetails.value = Response.Success(it)
@@ -127,7 +130,8 @@ class HomeViewModel(private val repo:Repository,private val connectivityListener
      private fun getRemoteHourlyWeatherForecast(lat:Double,lon:Double){
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                repo.getCurrentForecast(lat,lon)
+                val unit = repo.getTempUnit().first()
+                repo.getCurrentForecast(lat,lon,unit)
                     .catch { weatherHourlyForecastDetails.value = Response.Failure(Throwable("Error getting data")) }
                     .map{it.list.take(9)}
                     .collect{
@@ -143,7 +147,8 @@ class HomeViewModel(private val repo:Repository,private val connectivityListener
      private fun getRemoteDailyWeatherForecast(lat:Double,lon:Double){
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                repo.getCurrentForecast(lat,lon)
+                val unit = repo.getTempUnit().first()
+                repo.getCurrentForecast(lat,lon,unit)
                     .catch { weatherDailyForecastDetails.value = Response.Failure(Throwable("Error getting data")) }
                     .map { newList ->
                         newList.list
