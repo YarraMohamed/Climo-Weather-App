@@ -126,7 +126,7 @@ fun FavMapScreen(viewModel: MapViewModel) {
                     modifier = Modifier.fillMaxWidth(0.8f),
                     colors = ButtonDefaults.buttonColors(colorResource(R.color.blue))
                 ) {
-                    Text("Add to Favourites", fontFamily = InterMedium)
+                    Text(stringResource(R.string.add_to_favourites), fontFamily = InterMedium)
                 }
             }
         }

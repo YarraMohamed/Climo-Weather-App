@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings">الاعدادات</string>
+    <string name="language">اللغة</string>
+    <string name="location">الموقع</string>
+    <string name="temp_unit">درجة الحرارة</string>
+    <string name="wind_speed">سرعة الرياح</string>
+    <string name="english">الانجليزية</string>
+    <string name="arabic">العربية</string>
+    <string name="gps">GPS</string>
+    <string name="map">الخريطة</string>
+    <string name="meter_second">م/ث</string>
+    <string name="miles_hour">م/س</string>
+    <string name="kelvin">كلفن</string>
+    <string name="celsius">درجة مئوية</string>
+    <string name="fahrenheit">فهرنهايت</string>
+    <string name="favourites">المفضلة</string>
+    <string name="alerts">التنبيهات</string>
+    <string name="hourly_forecast">توقعات الطقس لكل ساعة</string>
+    <string name="pm">مساءا</string>
+    <string name="daily_details">تفاصيل اليوم</string>
+    <string name="clouds">السحاب</string>
+    <string name="humidity">الرطوبة</string>
+    <string name="pressure">الضغط</string>
+    <string name="daily_forecast">توقعات الطقس لليومt</string>
+    <string name="home">الرئيسية</string>
+    <string name="c">°</string>
+    <string name="add_to_favourites">اضافة للمفضلة</string>
+    <string name="API_KEY">AIzaSyDM-junsji3WW5ASGT1zIirl4kQrMhjKvA</string>
+    <string name="start_time">من</string>
+    <string name="to_time">الي</string>
+    <string name="cancel">الغاء</string>
+    <string name="save">حفظ</string>
+    <string name="set_your_alert">احفظ تنبيهك!</string>
+    <string name="choose_location">اختار المكان</string>
+    <string name="default_lan">افتراضي</string>
+    <string name="delete">مسح</string>
+    <string name="delete_item">مسح عنصر</string>
+    <string name="are_you_sure_you_want_to_delete_this_item">هل تريد مسح هذا العنصر؟</string>
+</resources>

@@ -1,5 +1,7 @@
 package com.example.climo.data.local
 
+import android.location.Location
+
 class FakeOptionsLocalDataSource : OptionsLocalDataSource {
     override fun saveTempUnit(tempUnit: String) {
         TODO("Not yet implemented")
@@ -17,11 +19,19 @@ class FakeOptionsLocalDataSource : OptionsLocalDataSource {
         TODO("Not yet implemented")
     }
 
-    override fun saveLocation(location: String) {
+    override fun saveLocation(lat: Double, lon: Double) {
         TODO("Not yet implemented")
     }
 
-    override fun getSavedLocation(): String {
+    override fun getSavedLocation(): Location {
+        TODO("Not yet implemented")
+    }
+
+    override fun saveLocationOption(location: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun getSavedLocationOption(): String {
         TODO("Not yet implemented")
     }
 
@@ -32,4 +42,5 @@ class FakeOptionsLocalDataSource : OptionsLocalDataSource {
     override fun getLanguage(): String {
         TODO("Not yet implemented")
     }
+
 }

@@ -2,6 +2,7 @@ package com.example.climo.view
 
 import FavMapScreen
 import android.app.AlertDialog
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
@@ -20,43 +21,49 @@ import androidx.lifecycle.lifecycleScope
 import com.example.climo.R
 import com.example.climo.settings.view.SettingsView
 import com.example.climo.utilities.ApplicationUtils
+import com.example.climo.utilities.LocaleHelper
 import com.google.android.libraries.places.api.Places
 import kotlinx.coroutines.launch
+import java.util.Locale
 
 const val REQUEST_LOCATION_CODE = 2005
+
 class MainActivity : ComponentActivity() {
 
     private val applicationUtils = ApplicationUtils(this@MainActivity)
-    private var locationState: MutableState<Location> = mutableStateOf(Location(LocationManager.GPS_PROVIDER))
-//    private var location : Location = Location(LocationManager.GPS_PROVIDER)
+    private var locationState: MutableState<Location> =
+        mutableStateOf(Location(LocationManager.GPS_PROVIDER))
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if(!applicationUtils.isLocationEnabled()) applicationUtils.enableLocationService(this)
+        if (!applicationUtils.isLocationEnabled()) applicationUtils.enableLocationService(this)
         Places.initialize(applicationContext, getString(R.string.API_KEY))
         setContent {
             ClimoApp(locationState.value)
         }
     }
+
     override fun onStart() {
         super.onStart()
-        if(applicationUtils.checkPermissions()){
-            if(applicationUtils.isLocationEnabled()){
+        if (applicationUtils.checkPermissions()) {
+            if (applicationUtils.isLocationEnabled()) {
                 applicationUtils.getLocation()
                 lifecycleScope.launch {
                     applicationUtils.locationFlow.collect { updatedLocation ->
                         locationState.value = updatedLocation
                     }
                 }
-            }else{
+            } else {
                 applicationUtils.enableLocationService(this)
             }
-        }else{
+        } else {
             requestLocationPermissions()
         }
     }
 
-    fun requestLocationPermissions(){
-        ActivityCompat.requestPermissions(this,
+    fun requestLocationPermissions() {
+        ActivityCompat.requestPermissions(
+            this,
             arrayOf(
                 android.Manifest.permission.ACCESS_FINE_LOCATION,
                 android.Manifest.permission.ACCESS_COARSE_LOCATION,

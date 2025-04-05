@@ -5,6 +5,7 @@ import android.location.Location
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.compose.ui.text.intl.Locale
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -112,7 +113,8 @@ class HomeViewModel(private val repo:Repository,private val connectivityListener
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 val unit = repo.getTempUnit().first()
-                repo.getCurrentWeather(lat,lon,unit)
+                val lang = if(repo.getLanguage().first()!="default") repo.getLanguage().first() else "en"
+                repo.getCurrentWeather(lat,lon,unit,lang)
                     .catch { weatherDetails.value = Response.Failure(Throwable(it.message)) }
                     .collect{
                         weatherDetails.value = Response.Success(it)
@@ -126,6 +128,7 @@ class HomeViewModel(private val repo:Repository,private val connectivityListener
         }
 
     }
+
 
      private fun getRemoteHourlyWeatherForecast(lat:Double,lon:Double){
         viewModelScope.launch(Dispatchers.IO) {

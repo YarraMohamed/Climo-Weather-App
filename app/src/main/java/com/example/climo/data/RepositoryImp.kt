@@ -45,8 +45,8 @@ class RepositoryImp private constructor (
     private val optionsLocalDataSourceImp: OptionsLocalDataSource):Repository {
 
 
-    override suspend fun getCurrentWeather(lat:Double,lon:Double,unit:String): Flow<CurrentWeather> {
-        return weatherRemoteDataSourceImp.getCurrentWeather(lat,lon,unit)
+    override suspend fun getCurrentWeather(lat:Double,lon:Double,unit:String,lang:String): Flow<CurrentWeather> {
+        return weatherRemoteDataSourceImp.getCurrentWeather(lat,lon,unit,lang)
     }
 
     override suspend fun getCurrentForecast(lat: Double, lon: Double,unit: String): Flow<WeatherList> {
@@ -183,7 +183,7 @@ class RepositoryImp private constructor (
     }
 
     override fun getLanguage(): Flow<String> {
-        return flowOf( optionsLocalDataSourceImp.getLanguage())
+        return flowOf(optionsLocalDataSourceImp.getLanguage())
     }
 
 

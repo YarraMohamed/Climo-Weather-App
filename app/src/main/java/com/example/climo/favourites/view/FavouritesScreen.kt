@@ -72,7 +72,7 @@ fun FavouritesView(viewModel : FavouritesViewModel, navController: NavHostContro
 
     LaunchedEffect(messageState.value) {
         if(!messageState.value.isNullOrBlank())
-            snackBarHostState.showSnackbar(messageState.value!!, duration = SnackbarDuration.Short)
+            snackBarHostState.showSnackbar(messageState.value, duration = SnackbarDuration.Short)
     }
 
     when(favouritesState.value){
@@ -169,12 +169,12 @@ private fun FavouriteItem(favourite: Favourites, action:()->Unit, nav : (lat:Dou
                     .padding(start = 5.dp, end = 20.dp)
                     .clickable(onClick = {
                         AlertDialog.Builder(context)
-                            .setTitle("Delete Item")
-                            .setMessage("Are you sure you want to delete this item?")
-                            .setPositiveButton("Delete") { _, _ ->
+                            .setTitle(context.getString(R.string.delete_item))
+                            .setMessage(context.getString(R.string.are_you_sure_you_want_to_delete_this_item))
+                            .setPositiveButton(context.getString(R.string.delete)) { _, _ ->
                                  action()
                             }
-                            .setNegativeButton("Cancel", null)
+                            .setNegativeButton(context.getString(R.string.cancel), null)
                             .show()
                     })
             )

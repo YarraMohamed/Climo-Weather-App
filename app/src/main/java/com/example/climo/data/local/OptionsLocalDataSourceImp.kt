@@ -49,6 +49,6 @@ class OptionsLocalDataSourceImp(private val sharedPreferences: SharedPreferences
     }
 
     override fun getLanguage(): String {
-        return sharedPreferences.getString("language", "en") ?: "en"
+        return sharedPreferences.getString("language", "default") ?: "deafult"
     }
 }

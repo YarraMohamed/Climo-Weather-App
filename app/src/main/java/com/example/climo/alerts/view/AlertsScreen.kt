@@ -148,7 +148,7 @@ fun AlertView(viewModel: AlertsViewModel,address:String) {
     when(alertsList.value){
         is Response.Failure -> {
         ErrorAnimation()
-        Toast.makeText(context,"Error in getting data", Toast.LENGTH_SHORT).show()
+        Toast.makeText(context, stringResource(R.string.error_in_getting_data), Toast.LENGTH_SHORT).show()
     }
         Response.Loading -> {
             Row(horizontalArrangement = Arrangement.Center){
@@ -242,7 +242,7 @@ private fun AlertItem(alerts: Alerts,action:()->Unit){
             .width(380.dp)
             .height(80.dp)){
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxSize()){
-            Text(text="date\n${alerts.date}",
+            Text(text= alerts.date,
                 fontSize = 18.sp,
                 color = colorResource(R.color.white),
                 fontFamily = RobotoMedium,
@@ -257,7 +257,7 @@ private fun AlertItem(alerts: Alerts,action:()->Unit){
                     .size(50.dp)
                     .padding(start = 13.dp, end = 20.dp)
             )
-            Text(text="Time\n${alerts.startTime}",
+            Text(text=alerts.startTime,
                 fontSize = 18.sp,
                 color = colorResource(R.color.white),
                 fontFamily = RobotoMedium,
@@ -282,12 +282,12 @@ private fun AlertItem(alerts: Alerts,action:()->Unit){
                     .padding(end = 10.dp)
                     .clickable(onClick = {
                         android.app.AlertDialog.Builder(context)
-                            .setTitle("Delete Item")
-                            .setMessage("Are you sure you want to delete this item?")
-                            .setPositiveButton("Delete") { _, _ ->
+                            .setTitle(context.getString(R.string.delete_item))
+                            .setMessage(context.getString(R.string.are_you_sure_you_want_to_delete_this_item))
+                            .setPositiveButton(context.getString(R.string.delete)) { _, _ ->
                                 action()
                             }
-                            .setNegativeButton("Cancel", null)
+                            .setNegativeButton(context.getString(R.string.cancel), null)
                             .show()
                     })
             )

@@ -77,7 +77,7 @@ class RepositoryTest {
         val lon = 32.5
 
         //When
-        val result = repository.getCurrentWeather(lat,lon,"metric").first()
+        val result = repository.getCurrentWeather(lat,lon,"metric","en").first()
 
         //Then
         assertThat(result.clouds.all,`is`(30))

@@ -1,6 +1,7 @@
 package com.example.climo.settings.view
 
 import android.util.Log
+import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -26,6 +27,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -36,11 +38,13 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.example.climo.R
 import com.example.climo.settings.viewmodel.SettingsViewModel
+import com.example.climo.utilities.LocaleHelper
 import com.example.climo.view.NavigationRoutes
 import com.example.climo.view.ui.theme.GradientBackground
 import com.example.climo.view.ui.theme.InterBold
 import com.example.climo.view.ui.theme.InterExtraBold
 import com.example.climo.view.ui.theme.RobotoRegular
+import java.util.Locale
 
 @Composable
 fun SettingsView(viewModel: SettingsViewModel,navController:NavHostController) {
@@ -67,6 +71,10 @@ fun SettingsView(viewModel: SettingsViewModel,navController:NavHostController) {
 private fun LanguageCard(viewModel: SettingsViewModel){
     val language by viewModel.language.collectAsStateWithLifecycle()
     val selectedLanguage = remember { mutableStateOf(language) }
+    val context = LocalContext.current
+    val activity = LocalActivity.current
+
+    Log.i("language", "LanguageCard: ${selectedLanguage.value} ")
 
     //Container
     Column(modifier = Modifier
@@ -107,15 +115,31 @@ private fun LanguageCard(viewModel: SettingsViewModel){
                         onClick = {
                             selectedLanguage.value = "en"
                             viewModel.saveLanguage("en")
+                            viewModel.getLanguage()
+                            LocaleHelper.changeLanguage(context,selectedLanguage.value)
+                            activity!!.recreate()
                         }
                     )
-                    Spacer(modifier = Modifier.width(70.dp))
                     RadioButtonWithText(
                         text = stringResource(R.string.arabic),
                         isSelected = selectedLanguage.value == "ar",
                         onClick = {
                             selectedLanguage.value = "ar"
                             viewModel.saveLanguage("ar")
+                            viewModel.getLanguage()
+                            LocaleHelper.changeLanguage(context,selectedLanguage.value)
+                            activity!!.recreate()
+                        }
+                    )
+                    RadioButtonWithText(
+                        text = stringResource(R.string.default_lan),
+                        isSelected = selectedLanguage.value == "default",
+                        onClick = {
+                            selectedLanguage.value = "default"
+                            viewModel.saveLanguage("default")
+                            viewModel.getLanguage()
+                            LocaleHelper.changeLanguage(context,"default")
+                            activity!!.recreate()
                         }
                     )
                 }
@@ -169,6 +193,7 @@ private fun LocationCard(viewModel: SettingsViewModel,navController: NavHostCont
                         onClick = {
                             selectedOptions.value = "GPS"
                             viewModel.saveLocationOption("GPS")
+                            viewModel.getLocationOption()
                         }
                     )
                     Spacer(modifier = Modifier.width(100.dp))
@@ -179,6 +204,7 @@ private fun LocationCard(viewModel: SettingsViewModel,navController: NavHostCont
                             selectedOptions.value = "MAP"
                             viewModel.saveLocationOption("MAP")
                             navController.navigate(NavigationRoutes.Map)
+                            viewModel.getLocationOption()
                         }
                     )
                 }

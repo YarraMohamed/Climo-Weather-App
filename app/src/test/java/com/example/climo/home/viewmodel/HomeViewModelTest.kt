@@ -12,6 +12,7 @@ import com.example.climo.model.CurrentWeather
 import com.example.climo.model.Main
 import com.example.climo.model.Response
 import com.example.climo.model.Weather
+import com.example.climo.model.WeatherStatus
 import com.example.climo.model.Wind
 import com.example.climo.utilities.ConnectivityListener
 import io.mockk.coEvery
@@ -55,6 +56,9 @@ class HomeViewModelTest{
         Clouds(30)
     )
 
+    private val fakeWeatherStatus = WeatherStatus(
+        30.1,32.5, fakeCurrentWeather)
+
     @OptIn(ExperimentalCoroutinesApi::class)
     @Before
     fun setup() = runTest{
@@ -62,12 +66,20 @@ class HomeViewModelTest{
         repository = mockk()
 
         coEvery {
-            repository.getCurrentWeather(31.0,32.0,"metric")
+            repository.getCurrentWeather(31.0,32.0,"metric","en")
         }returns flowOf(fakeCurrentWeather)
+
+        coEvery {
+            repository.getWeatherStatus(31.0,32.0)
+        }returns flowOf(fakeWeatherStatus)
 
         coEvery {
             repository.getTempUnit()
         }returns flowOf("metric")
+
+        coEvery {
+            repository.getLanguage()
+        }returns flowOf("en")
         viewModel = HomeViewModel(repository, ConnectivityListener(ApplicationProvider.getApplicationContext()))
     }
 
@@ -78,13 +90,33 @@ class HomeViewModelTest{
     }
 
     @Test
-    fun getCurrentWeather_retrieveObjectOfCurrentWeather() = runTest {
+    fun getCurrentWeather_onlineStatus_retrieveObjectOfCurrentWeather() = runTest {
         // Given
         val lat = 31.0
         val lon = 32.0
 
         // When
         viewModel.getCurrentWeather(lat, lon,true)
+        advanceUntilIdle()
+        val result = viewModel.currentWeather.first{
+            it is Response.Success
+        }
+
+
+        // Then
+        assertThat(result, instanceOf(Response.Success::class.java))
+        val successResponse = result as Response.Success
+        assertThat(successResponse.data.clouds.all, equalTo(30))
+    }
+
+    @Test
+    fun getCurrentWeather_offlineStatus_retrieveObjectOfCurrentWeather() = runTest {
+        // Given
+        val lat = 31.0
+        val lon = 32.0
+
+        // When
+        viewModel.getCurrentWeather(lat, lon,false)
         advanceUntilIdle()
         val result = viewModel.currentWeather.first{
             it is Response.Success

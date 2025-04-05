@@ -13,7 +13,7 @@ import com.example.climo.model.WeatherStatus
 import kotlinx.coroutines.flow.Flow
 
 interface Repository {
-    suspend fun getCurrentWeather(lat:Double,lon:Double,unit:String) : Flow<CurrentWeather>
+    suspend fun getCurrentWeather(lat:Double,lon:Double,unit:String,lang:String) : Flow<CurrentWeather>
     suspend fun getCurrentForecast(lat:Double,lon:Double,unit: String) : Flow<WeatherList>
 
     suspend fun getFavourites() : Flow<List<Favourites>>

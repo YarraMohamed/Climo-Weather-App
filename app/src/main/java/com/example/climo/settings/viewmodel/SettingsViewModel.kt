@@ -20,7 +20,7 @@ class SettingsViewModel(private val repo:Repository) : ViewModel() {
     private var windSpeedFlow = MutableStateFlow("")
     var windSpeed = windSpeedFlow.asStateFlow()
 
-    private var languageFlow = MutableStateFlow("en")
+    private var languageFlow = MutableStateFlow("default")
     var language = languageFlow.asStateFlow()
 
     private var locationOptionFlow = MutableStateFlow("GPS")
@@ -73,6 +73,7 @@ class SettingsViewModel(private val repo:Repository) : ViewModel() {
         viewModelScope.launch {
             repo.getLanguage()
                 .collect {
+                    Log.i("", "getLanguage: $it ")
                     languageFlow.value = it
                 }
         }
@@ -94,15 +95,6 @@ class SettingsViewModel(private val repo:Repository) : ViewModel() {
     fun saveLocation(lat:Double,lon:Double){
         repo.saveLocation(lat,lon)
     }
-//
-//    fun getLocation() {
-//        viewModelScope.launch {
-//            repo.getSavedLocation()
-//                .collect {
-//                    locationFlow.value=it
-//                }
-//        }
-//    }
 
     class SettingsFactory(private val repo: Repository) :ViewModelProvider.Factory{
         override fun <T : ViewModel> create(modelClass: Class<T>): T {

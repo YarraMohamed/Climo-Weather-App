@@ -46,6 +46,7 @@ import com.example.climo.model.CurrentWeather
 import com.example.climo.model.Deatils
 import com.example.climo.model.Response
 import com.example.climo.utilities.ErrorAnimation
+import com.example.climo.utilities.LocaleHelper
 import com.example.climo.utilities.formatDate
 import com.example.climo.utilities.formatTime
 import com.example.climo.view.ui.theme.InterBold
@@ -204,7 +205,7 @@ private fun WeatherDetails(currentWeather: CurrentWeather,address:String,time:St
                 .padding(top = 30.dp)) {
                 Row(modifier = Modifier.padding(top=20.dp)){
                     Text(
-                        text = "${currentWeather.main.temp}",
+                        text = LocaleHelper.formatNumber(currentWeather.main.temp),
                         color = colorResource(R.color.white),
                         fontSize = 58.sp,
                         fontFamily = InterBold,
@@ -245,7 +246,7 @@ private fun WeatherDetails(currentWeather: CurrentWeather,address:String,time:St
                     color = colorResource(R.color.white),
                     fontFamily = RobotoRegular,
                     textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(top=5.dp)
+                    modifier = Modifier.padding(top=5.dp).align(Alignment.CenterHorizontally)
                 )
             }
         }
@@ -290,7 +291,7 @@ private fun HourlyDetailsItem(details:Deatils) {
                 )
                 Row(modifier = Modifier.padding(top=20.dp)){
                     Text(
-                        text = "${details.main.temp}",
+                        text = LocaleHelper.formatNumber(details.main.temp),
                         color = colorResource(R.color.white),
                         fontSize = 24.sp,
                         fontFamily = InterBold,
@@ -348,7 +349,7 @@ private fun WeatherConditions(currentWeather: CurrentWeather) {
                         fontSize = 16.sp,
                         fontFamily = InterMedium
                     )
-                    Text(text = "${currentWeather.wind.speed} m",
+                    Text(text = LocaleHelper.formatNumber(currentWeather.wind.speed),
                         color = colorResource(R.color.black),
                         fontSize = 12.sp,
                         fontFamily = RobotoRegular
@@ -368,7 +369,7 @@ private fun WeatherConditions(currentWeather: CurrentWeather) {
                         fontSize = 16.sp,
                         fontFamily = InterMedium
                     )
-                    Text(text = "${currentWeather.clouds.all}%",
+                    Text(text =  LocaleHelper.formatNumber(currentWeather.clouds.all) ,
                         color = colorResource(R.color.black),
                         fontSize = 12.sp,
                         fontFamily = RobotoRegular
@@ -393,7 +394,7 @@ private fun WeatherConditions(currentWeather: CurrentWeather) {
                         fontSize = 16.sp,
                         fontFamily = InterMedium
                     )
-                    Text(text = "${currentWeather.main.humidity}%",
+                    Text(text =LocaleHelper.formatNumber(currentWeather.main.humidity) ,
                         color = colorResource(R.color.black),
                         fontSize = 12.sp,
                         fontFamily = RobotoRegular
@@ -413,7 +414,7 @@ private fun WeatherConditions(currentWeather: CurrentWeather) {
                         fontSize = 16.sp,
                         fontFamily = InterMedium
                     )
-                    Text(text = "${currentWeather.main.pressure} hPa",
+                    Text(text =LocaleHelper.formatNumber(currentWeather.main.pressure),
                         color = colorResource(R.color.black),
                         fontSize = 12.sp,
                         fontFamily = RobotoRegular
@@ -473,7 +474,7 @@ private fun DailyForecastDetails(details: Deatils){
         )
         Row(modifier = Modifier.weight(1f)){
             Text(
-                text = "${details.main.temp}",
+                text =LocaleHelper.formatNumber(details.main.temp),
                 color = colorResource(R.color.white),
                 fontSize = 24.sp,
                 fontFamily = InterBold,
